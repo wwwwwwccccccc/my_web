@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1800px; height: 1000px; background: #060708; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .glow { position: absolute; width: 1000px; height: 900px; right: -120px; top: -220px; background: radial-gradient(circle, rgba(120, 150, 148, .16), transparent 65%); filter: blur(30px); }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(236,233,226,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(236,233,226,.04) 1px, transparent 1px); background-size: 90px 90px; mask-image: radial-gradient(ellipse at 62% 44%, #000 10%, transparent 78%); }
+  .frame { position: absolute; inset: 24px; border: 1px solid rgba(236,233,226,.08); }
+  .top { position: absolute; left: 64px; right: 64px; top: 52px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  .top .l { display: flex; gap: 16px; align-items: center; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #c6ff4a; }
+  .left { position: absolute; left: 64px; top: 210px; width: 700px; z-index: 5; }
+  .index { font-family: var(--display); font-size: 11px; letter-spacing: .24em; color: #c6ff4a; }
+  h1 { margin: 22px 0 0 -8px; font-family: var(--display); font-size: 168px; font-weight: 700; line-height: .88; letter-spacing: -.045em; color: #f1eee7; }
+  .sub { margin-top: 30px; font-size: 23px; letter-spacing: .06em; color: rgba(236,233,226,.85); font-weight: 300; }
+  .desc { margin-top: 18px; width: 520px; font-size: 14px; line-height: 1.95; color: rgba(236,233,226,.55); font-weight: 300; }
+  .kpis { display: flex; gap: 42px; margin-top: 42px; padding-top: 18px; border-top: 1px solid rgba(236,233,226,.16); }
+  .kpi { font-family: var(--display); font-size: 10px; letter-spacing: .18em; color: rgba(236,233,226,.38); line-height: 1.8; }
+  .kpi b { display: block; font-size: 24px; font-weight: 500; letter-spacing: .02em; color: #ece9e2; }
+  .monitor {
+    position: absolute; left: 800px; top: 146px; width: 936px; height: 708px; z-index: 6;
+    background: #0a0c0d; border: 1px solid rgba(236,233,226,.18);
+    box-shadow: 0 50px 120px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .mon-top { height: 42px; display: flex; align-items: center; gap: 14px; padding: 0 14px; border-bottom: 1px solid rgba(236,233,226,.1); }
+  .lights { display: flex; gap: 6px; }
+  .lights i { width: 7px; height: 7px; border-radius: 50%; background: rgba(236,233,226,.16); display: block; }
+  .mon-title { font-family: var(--display); font-size: 9px; letter-spacing: .18em; color: rgba(236,233,226,.6); }
+  .rec { margin-left: auto; display: flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 8px; letter-spacing: .16em; color: rgba(236,233,226,.4); }
+  .rec i { width: 6px; height: 6px; border-radius: 50%; background: #c6ff4a; box-shadow: 0 0 10px rgba(198,255,74,.7); }
+  .cam-grid { position: absolute; left: 10px; right: 10px; top: 52px; bottom: 42px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
+  .cam { position: relative; overflow: hidden; background: #111; border: 1px solid rgba(236,233,226,.1); }
+  .feed { position: absolute; inset: 0; }
+  .c1 .feed { background: repeating-linear-gradient(112deg, #171a19 0 10px, #0d0f0e 10px 24px, #222624 24px 26px, #0d0f0e 26px 46px); filter: brightness(.9); }
+  .c2 .feed { background: repeating-linear-gradient(88deg, #191b19 0 7px, #0c0e0d 7px 20px, #2a2d29 20px 22px, #0c0e0d 22px 40px); }
+  .c3 .feed { background: repeating-linear-gradient(130deg, #141716 0 14px, #0b0d0c 14px 30px, #202421 30px 33px, #0b0d0c 33px 52px); }
+  .c4 .feed { background: repeating-linear-gradient(72deg, #181a18 0 9px, #0d0f0e 9px 26px, #262a27 26px 28px, #0d0f0e 28px 44px); }
+  .cam::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(0,0,0,.65) 100%), linear-gradient(180deg, rgba(255,255,255,.06), transparent 24%); pointer-events: none; }
+  .cam-label { position: absolute; left: 12px; top: 10px; z-index: 3; display: flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 8px; letter-spacing: .16em; color: rgba(255,255,255,.6); }
+  .cam-label i { width: 5px; height: 5px; background: #c6ff4a; border-radius: 50%; display: block; }
+  .bbox { position: absolute; z-index: 2; border: 1px solid #c6ff4a; box-shadow: 0 0 18px rgba(198,255,74,.18); }
+  .bbox::before, .bbox::after { content: ''; position: absolute; width: 10px; height: 10px; border-color: #c6ff4a; border-style: solid; }
+  .bbox::before { left: -1px; top: -1px; border-width: 2px 0 0 2px; }
+  .bbox::after { right: -1px; bottom: -1px; border-width: 0 2px 2px 0; }
+  .b1 { left: 34%; top: 32%; width: 30%; height: 28%; }
+  .b2 { left: 52%; top: 19%; width: 18%; height: 16%; }
+  .tag { position: absolute; z-index: 3; background: #c6ff4a; color: #0a0c0a; font-family: var(--display); font-size: 7px; letter-spacing: .1em; padding: 3px 5px; }
+  .t1 { left: 34%; top: calc(32% - 15px); }
+  .t2 { left: 52%; top: calc(19% - 15px); }
+  .cam-meta { position: absolute; left: 12px; right: 12px; bottom: 9px; z-index: 3; display: flex; justify-content: space-between; font-family: var(--display); font-size: 7px; letter-spacing: .12em; color: rgba(255,255,255,.38); }
+  .mon-bottom { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; display: flex; align-items: center; gap: 24px; padding: 0 14px; border-top: 1px solid rgba(236,233,226,.1); font-family: var(--display); font-size: 7px; letter-spacing: .14em; color: rgba(236,233,226,.36); }
+  .mon-bottom .ok { margin-left: auto; color: #c6ff4a; }
+  .bottom { position: absolute; left: 64px; right: 64px; bottom: 50px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  .tags { display: flex; gap: 32px; }
+  .tags span { font-size: 11px; letter-spacing: .16em; color: rgba(236,233,226,.52); }
+  .idx { font-family: var(--display); font-size: 11px; letter-spacing: .2em; color: rgba(236,233,226,.36); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow"></div><div class="grid"></div><div class="frame"></div>
+  <div class="top">
+    <div class="l"><span class="dot"></span><span class="meta">WANG — SELECTED WORKS</span></div>
+    <span class="meta">CASE 01 / INDUSTRIAL SOFTWARE</span>
+  </div>
+
+  <div class="left">
+    <span class="index">01 — MACHINE VISION</span>
+    <h1>INSPECT</h1>
+    <div class="sub">工业视觉检测系统</div>
+    <div class="desc">四路相机、实时图像处理与缺陷自动标记。用 QThread 并行采集与识别，把人工目检变成一条稳定运行的软件链路。</div>
+    <div class="kpis">
+      <div class="kpi"><b>04</b>CAMERAS</div>
+      <div class="kpi"><b>1 FPS</b>PER CAMERA</div>
+      <div class="kpi"><b>24H</b>ONLINE</div>
+    </div>
+  </div>
+
+  <div class="monitor">
+    <div class="mon-top">
+      <div class="lights"><i></i><i></i><i></i></div>
+      <span class="mon-title">LINE 04 / INSPECTION CONSOLE</span>
+      <span class="rec"><i></i>REC 00:14:32 / 1 FPS</span>
+    </div>
+    <div class="cam-grid">
+      <div class="cam c1">
+        <div class="feed"></div><div class="cam-label"><i></i>CAM 01 / TOP</div>
+        <div class="bbox b1"></div><div class="tag t1">DEFECT 0.98</div>
+        <div class="cam-meta"><span>1920 × 1080</span><span>FRAME 0184</span></div>
+      </div>
+      <div class="cam c2">
+        <div class="feed"></div><div class="cam-label"><i></i>CAM 02 / SIDE</div>
+        <div class="bbox b2"></div><div class="tag t2">DEFECT 0.94</div>
+        <div class="cam-meta"><span>1920 × 1080</span><span>FRAME 0184</span></div>
+      </div>
+      <div class="cam c3">
+        <div class="feed"></div><div class="cam-label"><i></i>CAM 03 / BOTTOM</div>
+        <div class="cam-meta"><span>1920 × 1080</span><span>FRAME 0184</span></div>
+      </div>
+      <div class="cam c4">
+        <div class="feed"></div><div class="cam-label"><i></i>CAM 04 / EDGE</div>
+        <div class="cam-meta"><span>1920 × 1080</span><span>FRAME 0184</span></div>
+      </div>
+    </div>
+    <div class="mon-bottom"><span>MODEL / OPENCV + CUSTOM</span><span>THREADS / 04</span><span>QUEUE / 0</span><span class="ok">● SYSTEM OK</span></div>
+  </div>
+
+  <div class="bottom">
+    <div class="tags"><span>C++ / Qt</span><span>OpenCV</span><span>多线程</span><span>STM32</span></div>
+    <div class="idx">01 / 04</div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

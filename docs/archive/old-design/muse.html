@@ -1,0 +1,224 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1200px; height: 1450px; background: #060707; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .glow {
+    position: absolute; width: 900px; height: 900px; right: -320px; top: -360px;
+    background: radial-gradient(circle, rgba(108, 140, 138, .18), transparent 65%);
+    filter: blur(20px);
+  }
+  .glow2 {
+    position: absolute; width: 700px; height: 600px; left: -260px; bottom: -200px;
+    background: radial-gradient(circle, rgba(198, 255, 74, .06), transparent 70%);
+    filter: blur(20px);
+  }
+  .top { position: absolute; left: 56px; right: 56px; top: 46px; display: flex; justify-content: space-between; align-items: center; }
+  .brandline { display: flex; align-items: center; gap: 12px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #c6ff4a; }
+  .heading { position: absolute; left: 54px; top: 108px; }
+  .heading h1 { font-size: 92px; font-weight: 700; letter-spacing: -.03em; line-height: 1; color: #f0ede6; }
+  .heading p { margin-top: 18px; font-size: 15px; letter-spacing: .04em; line-height: 1.8; color: rgba(236,233,226,.52); font-weight: 300; }
+  .badge {
+    position: absolute; right: 56px; top: 128px; text-align: right;
+    font-size: 11px; letter-spacing: .22em; color: rgba(236,233,226,.42); line-height: 2.1;
+  }
+
+  .window {
+    position: absolute; left: 54px; top: 330px; width: 1092px; height: 1040px;
+    background: #0b0d0e; border: 1px solid rgba(236,233,226,.12); border-radius: 18px;
+    box-shadow: 0 60px 140px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+    overflow: hidden;
+  }
+  .win-top {
+    height: 64px; display: flex; align-items: center; padding: 0 24px;
+    border-bottom: 1px solid rgba(236,233,226,.09); gap: 18px;
+  }
+  .lights { display: flex; gap: 7px; }
+  .lights i { width: 9px; height: 9px; border-radius: 50%; background: rgba(236,233,226,.16); display: block; }
+  .win-title { font-size: 12px; letter-spacing: .18em; color: rgba(236,233,226,.55); }
+  .win-title b { color: #ece9e2; font-weight: 500; }
+  .win-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .pill { font-size: 10px; letter-spacing: .16em; color: rgba(236,233,226,.55); border: 1px solid rgba(236,233,226,.14); border-radius: 999px; padding: 5px 10px; }
+  .avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(140deg,#5c6a68,#202524); border: 1px solid rgba(236,233,226,.2); }
+
+  .win-body { display: flex; height: 976px; }
+  .rail {
+    width: 198px; border-right: 1px solid rgba(236,233,226,.08); padding: 24px 16px;
+    display: flex; flex-direction: column; gap: 6px; background: rgba(255,255,255,.012);
+  }
+  .rail .new {
+    height: 38px; border-radius: 9px; background: #c6ff4a; color: #101204;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: .06em; margin-bottom: 18px;
+  }
+  .rail .label { font-size: 9px; letter-spacing: .2em; color: rgba(236,233,226,.32); margin: 14px 8px 6px; }
+  .navitem { display: flex; align-items: center; gap: 10px; font-size: 12px; color: rgba(236,233,226,.55); padding: 9px 8px; border-radius: 7px; }
+  .navitem.on { background: rgba(236,233,226,.06); color: #ece9e2; }
+  .navitem i { width: 12px; height: 12px; border: 1px solid currentColor; border-radius: 3px; opacity: .65; display: block; }
+  .rail .proj { font-size: 11px; color: rgba(236,233,226,.4); padding: 7px 8px; display: flex; justify-content: space-between; }
+  .rail .proj span { color: rgba(236,233,226,.25); }
+  .rail .foot { margin-top: auto; font-size: 9px; letter-spacing: .14em; color: rgba(236,233,226,.26); line-height: 1.9; }
+
+  .main { flex: 1; padding: 26px 28px; position: relative; }
+  .prompt {
+    border: 1px solid rgba(236,233,226,.13); border-radius: 12px; padding: 16px 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  }
+  .prompt .txt { font-size: 14px; line-height: 1.75; color: rgba(236,233,226,.82); font-weight: 300; }
+  .prompt .txt span { color: #ece9e2; }
+  .prompt-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  .chip { font-size: 10px; letter-spacing: .08em; color: rgba(236,233,226,.5); border: 1px solid rgba(236,233,226,.12); border-radius: 999px; padding: 4px 9px; }
+  .chip.on { color: #c6ff4a; border-color: rgba(198,255,74,.35); }
+  .gen { margin-left: auto; height: 34px; padding: 0 18px; border-radius: 8px; background: #ece9e2; color: #0b0d0e; font-size: 11px; font-weight: 700; letter-spacing: .1em; display: flex; align-items: center; gap: 8px; }
+  .gen b { color: #0b0d0e; }
+
+  .results-head { margin: 26px 2px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .results-head .t { font-size: 11px; letter-spacing: .2em; color: rgba(236,233,226,.45); }
+  .results-head .r { font-size: 10px; letter-spacing: .12em; color: rgba(236,233,226,.3); }
+
+  .results { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tile { position: relative; height: 336px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(236,233,226,.1); background: #101314; }
+  .tile .cap {
+    position: absolute; left: 14px; bottom: 12px; right: 14px; z-index: 3;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    font-size: 9px; letter-spacing: .16em; color: rgba(255,255,255,.62);
+  }
+  .tile .num { font-size: 9px; color: rgba(255,255,255,.4); }
+  .tile .sel { position: absolute; inset: 0; border: 2px solid #c6ff4a; border-radius: 10px; z-index: 4; display: none; }
+
+  .tile1 { background: #d9d2c2; }
+  .tile1 .blk { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-54%); width: 128px; height: 208px; background: linear-gradient(105deg,#121415 0%,#2c3031 48%,#0a0c0c 100%); border-radius: 8px 8px 4px 4px; box-shadow: 0 30px 50px rgba(60,50,35,.45); }
+  .tile1 .blk::before { content:''; position:absolute; left: 50%; top:-26px; transform: translateX(-50%); width: 46px; height: 30px; background: #171a1a; border-radius: 4px 4px 0 0; }
+  .tile1 .blk::after { content:'SILT'; position:absolute; left: 14px; top: 96px; font-size: 15px; letter-spacing: .34em; color: rgba(236,233,226,.7); }
+  .tile1 .shadow { position:absolute; left: 50%; bottom: 40px; transform: translateX(-50%); width: 240px; height: 34px; background: rgba(60,48,32,.32); filter: blur(14px); border-radius: 50%; }
+  .tile1 .cap { color: rgba(20,20,20,.55); }
+
+  .tile2 { background-image: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.55)), url('../stock/packaging-hi.jpg'); background-size: cover; background-position: 50% 58%; filter: saturate(.72) brightness(.8) contrast(1.05); }
+
+  .tile3 { background: radial-gradient(circle at 34% 30%, rgba(255,255,255,.9), transparent 30%), conic-gradient(from 210deg,#0a0c0d,#6f7b7d,#d9d4c7,#313638,#0a0c0d,#87908f,#111414); }
+  .tile3 .sphere { position:absolute; width: 190px; height: 190px; border-radius: 50%; left: 50%; top: 46%; transform: translate(-50%,-50%); background: radial-gradient(circle at 32% 26%, rgba(255,255,255,.95), transparent 24%), conic-gradient(from 30deg,#0a0c0d,#aeb7b5,#2c3132,#d8d2c4,#141718,#0a0c0d); box-shadow: inset -30px -40px 70px rgba(0,0,0,.9), 0 40px 70px rgba(0,0,0,.6); }
+  .tile3 .ring { position:absolute; left:50%; top:46%; width: 300px; height: 110px; border:1px solid rgba(255,255,255,.28); border-radius:50%; transform: translate(-50%,-50%) rotate(-16deg); }
+
+  .tile4 { background: #0d0f10; }
+  .tile4 .big { position:absolute; left: 26px; top: 40px; font-size: 92px; line-height: .86; font-weight: 700; letter-spacing: -.04em; color: #ece9e2; }
+  .tile4 .big em { font-style: normal; color: transparent; -webkit-text-stroke: 1px rgba(236,233,226,.5); }
+  .tile4 .cn { position:absolute; left: 28px; top: 238px; font-size: 26px; letter-spacing: .3em; color: rgba(236,233,226,.72); font-weight: 300; }
+  .tile4 .line { position:absolute; left: 28px; top: 296px; width: 120px; height: 1px; background: #c6ff4a; }
+
+  .floating {
+    position: absolute; right: 78px; top: 870px; z-index: 20;
+    background: rgba(16,19,20,.92); border: 1px solid rgba(236,233,226,.16); border-radius: 10px;
+    padding: 10px 12px; display: flex; gap: 10px; align-items: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6); backdrop-filter: blur(12px);
+  }
+  .floating .ic { width: 22px; height: 22px; border-radius: 6px; background: #c6ff4a; color:#0b0d0e; display:flex; align-items:center; justify-content:center; font-size: 11px; font-weight:700; }
+  .floating .tx { font-size: 10px; letter-spacing: .1em; color: rgba(236,233,226,.7); line-height: 1.5; }
+  .floating .tx b { display: block; color: #ece9e2; font-weight: 500; letter-spacing: .04em; }
+
+  .bottom { position: absolute; left: 56px; right: 56px; bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+  .bottom .l { font-size: 11px; letter-spacing: .18em; color: rgba(236,233,226,.35); }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 18px; height: 2px; background: rgba(236,233,226,.16); }
+  .dots i.on { background: #c6ff4a; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow"></div>
+  <div class="glow2"></div>
+
+  <div class="top">
+    <div class="brandline"><span class="dot"></span><span class="meta">MUSE / AI Creative Studio</span></div>
+    <span class="meta">Product Design 鈥?2025</span>
+  </div>
+
+  <div class="heading">
+    <h1>MUSE</h1>
+    <p>闈㈠悜鍒涙剰宸ヤ綔鑰呯殑鐢熸垚寮忚瑙夊伐浣滃彴銆?br>鎶婁竴鍙ヨ瘽锛屽彉鎴愬彲缁х画缂栬緫鐨勮璁＄礌鏉愩€?/p>
+  </div>
+  <div class="badge">CASE 02<br>AI PRODUCT / UX<br>WEB APP</div>
+
+  <div class="window">
+    <div class="win-top">
+      <div class="lights"><i></i><i></i><i></i></div>
+      <div class="win-title"><b>MUSE</b> &nbsp;/&nbsp; CANVAS</div>
+      <div class="win-right">
+        <span class="pill">NOVA-2</span>
+        <span class="pill">1920 脳 1080</span>
+        <div class="avatar"></div>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="rail">
+        <div class="new">锛?鏂板缓鐢诲竷</div>
+        <div class="label">WORKSPACE</div>
+        <div class="navitem on"><i></i>鐢熸垚宸ヤ綔鍙?/div>
+        <div class="navitem"><i></i>鍝佺墝璧勪骇</div>
+        <div class="navitem"><i></i>鐏垫劅鏀惰棌</div>
+        <div class="label">RECENT</div>
+        <div class="proj">SILT 棣欐皼 KV <span>2h</span></div>
+        <div class="proj">NOVA 鍔ㄦ€佹爣 <span>1d</span></div>
+        <div class="proj">鏄ュ娴锋姤缁?<span>3d</span></div>
+        <div class="proj">鍖呰鎻愭 v4 <span>5d</span></div>
+        <div class="foot">MUSE 0.9 BETA<br>漏 2025 WANG STUDIO</div>
+      </div>
+      <div class="main">
+        <div class="prompt">
+          <div class="txt"><span>@SILT</span> 涓轰笢鏂规湪璐ㄩ鍝佺墝 SILT 璁捐涓€缁勬瀬绠€涓讳箟娴锋姤锛屾殩璋冦€佸ぇ閲忕暀鐧姐€佽兌鐗囬绮掞紝涓枃鏍囬鎺掔増鍏嬪埗锛?span>#鍝佺墝瑙嗚</span> <span>#娴锋姤</span></div>
+          <div class="prompt-bar">
+            <span class="chip on">16:9</span>
+            <span class="chip">鑳剁墖棰楃矑</span>
+            <span class="chip">鍙傝€冨浘 2</span>
+            <div class="gen">鐢熸垚 <b>鈫?/b></div>
+          </div>
+        </div>
+
+        <div class="results-head">
+          <span class="t">GENERATED 鈥?04</span>
+          <span class="r">SEED 88213 路 6.4S 路 2 UPSCALED</span>
+        </div>
+
+        <div class="results">
+          <div class="tile tile1">
+            <div class="shadow"></div>
+            <div class="blk"></div>
+            <div class="cap"><span>PACKAGING / HERO</span><span class="num">01</span></div>
+          </div>
+          <div class="tile tile2">
+            <div class="cap"><span>CAMPAIGN / STILL</span><span class="num">02</span></div>
+          </div>
+          <div class="tile tile3">
+            <div class="ring"></div>
+            <div class="sphere"></div>
+            <div class="cap"><span>KEY VISUAL / 3D</span><span class="num">03</span></div>
+            <div class="sel"></div>
+          </div>
+          <div class="tile tile4">
+            <div class="big">闈?br><em>姝?/em></div>
+            <div class="cn">鏈?璐?涔?鎭?/div>
+            <div class="line"></div>
+            <div class="cap"><span>TYPOGRAPHY / POSTER</span><span class="num">04</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating">
+    <div class="ic">AI</div>
+    <div class="tx"><b>灞€閮ㄩ噸缁?/b>淇濇寔鍏夊奖锛屾浛鎹富浣撴潗璐?/div>
+  </div>
+
+  <div class="bottom">
+    <div class="l">MUSE 鈥?FROM A SENTENCE TO A SYSTEM</div>
+    <div class="dots"><i class="on"></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

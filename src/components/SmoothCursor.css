@@ -1,0 +1,29 @@
+html.smooth-cursor-on,
+html.smooth-cursor-on * {
+  cursor: none !important;
+}
+
+.smooth-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.smooth-cursor canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .smooth-cursor {
+    display: none;
+  }
+
+  html.smooth-cursor-on,
+  html.smooth-cursor-on * {
+    cursor: auto !important;
+  }
+}

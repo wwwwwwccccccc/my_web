@@ -1,0 +1,40 @@
+.glimmer-wrap {
+  --side: max(64px, calc((100vw - 1700px) / 2));
+  --fade: clamp(40px, 4vw, 110px);
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.88;
+  mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #000 0,
+    #000 max(0px, calc(var(--side) - var(--fade))),
+    transparent var(--side),
+    transparent calc(100% - var(--side)),
+    #000 calc(100% - var(--side) + var(--fade)),
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    #000 0,
+    #000 max(0px, calc(var(--side) - var(--fade))),
+    transparent var(--side),
+    transparent calc(100% - var(--side)),
+    #000 calc(100% - var(--side) + var(--fade)),
+    #000 100%
+  );
+}
+
+.glimmer-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1023px) {
+  .glimmer-wrap {
+    display: none;
+  }
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1200px; height: 1450px; background: #06080a; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(160,190,200,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(160,190,200,.06) 1px, transparent 1px); background-size: 60px 60px; }
+  .grid::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 38%, rgba(6,8,10,0) 20%, rgba(6,8,10,.92) 78%); }
+  .glow { position: absolute; width: 800px; height: 700px; left: 200px; top: 360px; background: radial-gradient(ellipse, rgba(90,150,160,.18), transparent 65%); filter: blur(30px); }
+  .frame { position: absolute; inset: 30px; border: 1px solid rgba(236,233,226,.1); }
+  .top { position: absolute; left: 56px; right: 56px; top: 54px; display: flex; justify-content: space-between; z-index: 5; }
+  .head { position: absolute; left: 56px; top: 118px; z-index: 5; }
+  .head h1 { font-family: var(--display); font-size: 236px; font-weight: 700; line-height: .82; letter-spacing: -.05em; color: #f1eee7; margin-left: -8px; }
+  .head .sub { margin-top: 18px; font-size: 19px; letter-spacing: .1em; color: rgba(236,233,226,.78); }
+  .head .en { margin-top: 12px; font-family: var(--display); font-size: 9px; letter-spacing: .24em; color: rgba(236,233,226,.36); }
+  .badge { margin-top: 22px; display: inline-flex; gap: 10px; align-items: center; border: 1px solid rgba(198,255,74,.3); padding: 6px 10px; font-family: var(--display); font-size: 8px; letter-spacing: .16em; color: #c6ff4a; }
+
+  .diagram { position: absolute; left: 80px; right: 80px; top: 520px; height: 640px; z-index: 4; }
+  .node {
+    position: absolute; width: 300px; height: 220px; border: 1px solid rgba(236,233,226,.2);
+    background: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.006));
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  }
+  .node::before { content: ''; position: absolute; inset: 16px; border: 1px dashed rgba(198,255,74,.14); }
+  .node.a { left: 0; top: 60px; }
+  .node.b { right: 0; top: 60px; }
+  .node .pin { position: absolute; width: 1px; height: 12px; background: rgba(236,233,226,.3); }
+  .node .pin.t { top: -12px; } .node .pin.b { bottom: -12px; }
+  .node .name { position: absolute; left: 18px; top: 16px; font-family: var(--display); font-size: 20px; letter-spacing: .08em; color: #ece9e2; }
+  .node .kind { position: absolute; left: 18px; top: 46px; font-family: var(--display); font-size: 8px; letter-spacing: .18em; color: #c6ff4a; }
+  .node .spec { position: absolute; left: 18px; bottom: 16px; font-family: var(--display); font-size: 8px; letter-spacing: .14em; line-height: 1.9; color: rgba(236,233,226,.4); }
+  .node .die { position: absolute; right: 20px; top: 22px; width: 74px; height: 74px; border: 1px solid rgba(236,233,226,.16); background-image: linear-gradient(rgba(236,233,226,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(236,233,226,.08) 1px, transparent 1px); background-size: 12px 12px; }
+  .node .die::after { content: ''; position: absolute; inset: 18px; border: 1px solid rgba(198,255,74,.35); }
+
+  .lanes { position: absolute; left: 300px; right: 300px; top: 100px; height: 150px; }
+  .lane { position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, rgba(198,255,74,.15), rgba(198,255,74,.7), rgba(198,255,74,.15)); }
+  .lane::before, .lane::after { content: ''; position: absolute; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #c6ff4a; box-shadow: 0 0 14px rgba(198,255,74,.6); }
+  .lane::before { left: 0; } .lane::after { right: 0; }
+  .lane.l1 { top: 34px; } .lane.l2 { top: 60px; } .lane.l3 { top: 86px; } .lane.l4 { top: 112px; opacity: .45; }
+  .lane-label { position: absolute; left: 50%; top: -16px; transform: translateX(-50%); font-family: var(--display); font-size: 8px; letter-spacing: .18em; color: rgba(198,255,74,.8); white-space: nowrap; }
+  .lane-sub { position: absolute; left: 50%; top: 132px; transform: translateX(-50%); font-family: var(--display); font-size: 7px; letter-spacing: .14em; color: rgba(236,233,226,.32); white-space: nowrap; }
+
+  .scope { position: absolute; left: 0; right: 0; bottom: 0; height: 200px; border-top: 1px solid rgba(236,233,226,.12); }
+  .scope-label { position: absolute; left: 0; top: 16px; font-family: var(--display); font-size: 8px; letter-spacing: .18em; color: rgba(236,233,226,.34); }
+  .scope svg { position: absolute; left: 0; right: 0; bottom: 26px; width: 100%; height: 120px; }
+  .scope-meta { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--display); font-size: 7px; letter-spacing: .14em; color: rgba(236,233,226,.3); }
+
+  .side { position: absolute; right: 26px; top: 50%; writing-mode: vertical-rl; transform: translateY(-50%); font-family: var(--display); font-size: 8px; letter-spacing: .3em; color: rgba(236,233,226,.25); z-index: 5; }
+  .bottom { position: absolute; left: 56px; right: 56px; bottom: 48px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  .tags { display: flex; gap: 26px; }
+  .tags span { font-size: 10px; letter-spacing: .14em; color: rgba(236,233,226,.5); }
+  .idx { font-family: var(--display); font-size: 10px; letter-spacing: .2em; color: rgba(236,233,226,.34); }
+  .bigidx { position: absolute; right: 60px; bottom: 120px; font-family: var(--display); font-size: 190px; font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(236,233,226,.08); z-index: 2; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="grid"></div><div class="glow"></div><div class="frame"></div>
+  <div class="top"><span class="meta">WANG — SELECTED WORKS</span><span class="meta">CASE 02 / SYSTEMS</span></div>
+
+  <div class="head">
+    <h1>LINK</h1>
+    <div class="sub">异构算力高速传输</div>
+    <div class="en">RK3588 ↔ FPGA / PCIE 2.0 x2 / LINUX</div>
+    <div class="badge">● LINK UP / 2 LANE</div>
+  </div>
+
+  <div class="diagram">
+    <div class="node a">
+      <div class="pin t" style="left:60px"></div><div class="pin t" style="left:110px"></div><div class="pin t" style="left:160px"></div><div class="pin t" style="left:210px"></div>
+      <div class="pin b" style="left:60px"></div><div class="pin b" style="left:110px"></div><div class="pin b" style="left:160px"></div><div class="pin b" style="left:210px"></div>
+      <div class="name">RK3588</div>
+      <div class="kind">HOST / ARM64</div>
+      <div class="die"></div>
+      <div class="spec">LINUX 5.10 / UBUNTU<br>DEVICE TREE / PCIE PHY</div>
+    </div>
+    <div class="node b">
+      <div class="pin t" style="left:60px"></div><div class="pin t" style="left:110px"></div><div class="pin t" style="left:160px"></div><div class="pin t" style="left:210px"></div>
+      <div class="pin b" style="left:60px"></div><div class="pin b" style="left:110px"></div><div class="pin b" style="left:160px"></div><div class="pin b" style="left:210px"></div>
+      <div class="name">FPGA</div>
+      <div class="kind">ENDPOINT / RIFFA</div>
+      <div class="die"></div>
+      <div class="spec">DMA ENGINE / 4 CH<br>THROUGHPUT TEST / 2 LANE</div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane-label">PCIE 2.0 × 2 / 5 GT/S</div>
+      <div class="lane l1"></div><div class="lane l2"></div><div class="lane l3"></div><div class="lane l4"></div>
+      <div class="lane-sub">TX / RX · DMA RING · 4 CHANNELS</div>
+    </div>
+
+    <div class="scope">
+      <div class="scope-label">TRANSFER RATE / SAMPLE</div>
+      <svg viewBox="0 0 1040 120" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="wg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#c6ff4a" stop-opacity=".22"/>
+            <stop offset="1" stop-color="#c6ff4a" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M0 80 L40 78 L60 60 L80 90 L100 40 L120 70 L150 66 L170 30 L190 72 L220 58 L250 64 L280 22 L300 74 L330 60 L360 66 L390 34 L420 70 L450 56 L480 62 L510 26 L540 72 L570 54 L600 64 L630 30 L660 70 L690 60 L720 66 L750 36 L780 68 L820 58 L850 62 L880 30 L910 72 L940 60 L970 66 L1000 40 L1040 64 L1040 120 L0 120 Z" fill="url(#wg)"/>
+        <path d="M0 80 L40 78 L60 60 L80 90 L100 40 L120 70 L150 66 L170 30 L190 72 L220 58 L250 64 L280 22 L300 74 L330 60 L360 66 L390 34 L420 70 L450 56 L480 62 L510 26 L540 72 L570 54 L600 64 L630 30 L660 70 L690 60 L720 66 L750 36 L780 68 L820 58 L850 62 L880 30 L910 72 L940 60 L970 66 L1000 40 L1040 64" fill="none" stroke="#c6ff4a" stroke-width="1.2" opacity=".85"/>
+      </svg>
+      <div class="scope-meta"><span>0.0 MS</span><span>BUFFER / 4 MB</span><span>PEAK / 2 LANE</span><span>1.0 MS</span></div>
+    </div>
+  </div>
+
+  <div class="side">HETEROGENEOUS COMPUTING — DRIVER / DEVICE TREE / DMA</div>
+  <div class="bigidx">02</div>
+  <div class="bottom">
+    <div class="tags"><span>RK3588</span><span>FPGA</span><span>PCIe</span><span>Linux 驱动</span></div>
+    <div class="idx">02 / 04</div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

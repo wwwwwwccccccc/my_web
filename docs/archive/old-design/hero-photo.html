@@ -1,0 +1,110 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  @font-face {
+    font-family: 'Xingkai';
+    src: url('../../public/fonts/MaShanZheng-hero.woff2') format('woff2');
+    font-weight: 400;
+  }
+  body { width: 1700px; height: 1000px; background: #050606; overflow: hidden; }
+  .shot { position: absolute; inset: 0; overflow: hidden; }
+  .photo {
+    position: absolute; inset: 0;
+    background-image: url('../../public/images/hero-shanghai.webp');
+    background-size: cover;
+    background-position: 50% 38%;
+    filter: brightness(.82) contrast(1.06) saturate(.88);
+    transform: scale(1.04);
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(4,5,6,.62) 0%, rgba(4,5,6,.2) 32%, rgba(4,5,6,.38) 62%, rgba(4,5,6,.94) 100%),
+      radial-gradient(ellipse 58% 54% at 50% 46%, rgba(3,4,5,.5) 0%, rgba(3,4,5,.18) 55%, transparent 100%),
+      radial-gradient(120% 90% at 50% 50%, transparent 38%, rgba(3,4,5,.55) 100%);
+  }
+  .warm {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,140,70,.10), transparent 42%);
+    mix-blend-mode: screen; opacity: .5;
+  }
+  .nav {
+    position: absolute; left: 64px; right: 64px; top: 40px; display: flex; align-items: center; justify-content: space-between; z-index: 5;
+  }
+  .brand { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
+  .brand b { font-size: 21px; font-weight: 500; letter-spacing: .16em; }
+  .brand b i { font-style: normal; color: #c6ff4a; }
+  .brand span { font-family: var(--display); font-size: 8px; letter-spacing: .22em; color: rgba(236,233,226,.6); }
+  .links { display: flex; gap: 42px; }
+  .links span { font-size: 13px; letter-spacing: .08em; color: rgba(236,233,226,.66); }
+  .links sup { font-family: var(--display); font-size: 8px; color: rgba(198,255,74,.8); margin-right: 6px; }
+  .cta { border: 1px solid rgba(236,233,226,.3); padding: 11px 17px; font-size: 12px; letter-spacing: .06em; color: #ece9e2; display: flex; gap: 10px; align-items: center; }
+  .cta i { width: 6px; height: 6px; border-radius: 50%; background: #c6ff4a; }
+
+  .center { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; z-index: 4; padding-top: 14px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid rgba(198,255,74,.38); background: rgba(12,16,10,.42);
+    color: #c6ff4a; font-family: var(--display); font-size: 9px; letter-spacing: .22em;
+    padding: 7px 14px; margin-bottom: 48px;
+    backdrop-filter: blur(8px);
+  }
+  .badge span { color: rgba(198,255,74,.62); }
+  .title {
+    font-family: 'Xingkai', 'STXingkai', serif;
+    font-size: 208px; line-height: 1; letter-spacing: .035em;
+    color: #f6f2e9; font-weight: 400;
+    text-shadow: 0 26px 90px rgba(0,0,0,.55);
+  }
+  .intro {
+    margin-top: 54px; font-family: var(--display); font-size: 11px; letter-spacing: .2em;
+    color: rgba(236,233,226,.8); line-height: 2.1;
+  }
+  .intro b { color: #fff; font-weight: 500; }
+  .zh { margin-top: 14px; font-size: 14px; letter-spacing: .04em; color: rgba(236,233,226,.56); }
+  .enter {
+    display: inline-flex; align-items: center; gap: 14px; margin-top: 42px;
+    font-size: 12px; letter-spacing: .12em; color: rgba(236,233,226,.85);
+    border-bottom: 1px solid rgba(236,233,226,.3); padding-bottom: 8px;
+  }
+  .enter i { color: #c6ff4a; font-style: normal; }
+
+  .bottom { position: absolute; left: 64px; right: 64px; bottom: 38px; display: flex; justify-content: space-between; align-items: center; z-index: 5; font-family: var(--display); font-size: 9px; letter-spacing: .2em; color: rgba(236,233,226,.45); }
+  .bottom .scroll { display: flex; align-items: center; gap: 14px; position: absolute; left: 50%; transform: translateX(-50%); }
+  .bottom .scroll em { width: 54px; height: 1px; background: linear-gradient(90deg, #c6ff4a, transparent); display: block; }
+  .bottom .r { display: flex; gap: 20px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="shot">
+  <div class="photo"></div>
+  <div class="warm"></div>
+  <div class="shade"></div>
+
+  <div class="nav">
+    <div class="brand"><b>鐜嬭咖<i>.</i></b><span>VISUAL / AI / BRAND</span></div>
+    <div class="links"><span><sup>01</sup>绠€浠?/span><span><sup>02</sup>浣滃搧</span><span><sup>03</sup>浼樺娍</span><span><sup>04</sup>鑱旂郴</span></div>
+    <div class="cta"><i></i>寮€濮嬪悎浣?鈫?/div>
+  </div>
+
+  <div class="center">
+    <div class="badge"><span>鈼?/span> AVAILABLE FOR WORK <span>/ 2026鈥?7</span></div>
+    <div class="title">璁捐涓嶅彲瑙佷箣澶?/div>
+    <div class="intro">HELLO, I'M <b>WANG</b> 鈥?VISUAL / AI / BRAND DESIGNER<br>BASED IN WUHAN, CHINA.</div>
+    <div class="zh">浠ュ伐绋嬫€濈淮涓庣敓鎴愬紡宸ュ叿锛屾瀯寤哄厠鍒惰€屾湁閿嬭姃鐨勫搧鐗岃〃杈俱€?/div>
+    <div class="enter">鏌ョ湅绮鹃€変綔鍝?<i>鈫?/i></div>
+  </div>
+
+  <div class="bottom">
+    <span>WUHAN, CN 鈥?30.59掳N / 114.30掳E</span>
+    <span class="scroll">SCROLL TO EXPLORE <em></em></span>
+    <div class="r"><span>10:28:23</span><span>FOLIO / 001</span></div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

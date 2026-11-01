@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  @font-face {
+    font-family: 'Xingkai';
+    src: url('../../public/fonts/MaShanZheng-hello.woff2') format('woff2');
+    font-weight: 400;
+  }
+  body { width: 1800px; height: 1000px; background: #060809; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .glow { position: absolute; width: 900px; height: 700px; left: 700px; top: 100px; background: radial-gradient(ellipse, rgba(120,150,160,.14), transparent 65%); filter: blur(30px); }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(236,233,226,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(236,233,226,.04) 1px, transparent 1px); background-size: 90px 90px; mask-image: radial-gradient(ellipse at 55% 45%, #000 10%, transparent 80%); }
+  .frame { position: absolute; inset: 24px; border: 1px solid rgba(236,233,226,.08); }
+  .top { position: absolute; left: 64px; right: 64px; top: 48px; display: flex; justify-content: space-between; z-index: 6; }
+  .head { position: absolute; left: 64px; top: 108px; z-index: 6; display: flex; align-items: flex-end; gap: 34px; }
+  .head h1 { font-family: var(--display); font-size: 116px; font-weight: 700; line-height: .85; letter-spacing: -.04em; color: #f1eee7; }
+  .head .sub { padding-bottom: 8px; }
+  .head .sub .cn { font-size: 19px; letter-spacing: .08em; color: rgba(236,233,226,.78); }
+  .head .sub .en { margin-top: 8px; font-family: var(--display); font-size: 8px; letter-spacing: .22em; color: rgba(236,233,226,.36); }
+
+  .editor { position: absolute; left: 64px; top: 300px; width: 880px; height: 590px; z-index: 5; background: #0a0d0f; border: 1px solid rgba(236,233,226,.17); box-shadow: 0 40px 100px rgba(0,0,0,.6); }
+  .ed-top { height: 38px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid rgba(236,233,226,.09); }
+  .lights { display: flex; gap: 6px; }
+  .lights i { width: 7px; height: 7px; border-radius: 50%; background: rgba(236,233,226,.16); display: block; }
+  .tab { margin-left: 10px; font-family: 'Consolas', monospace; font-size: 10px; color: rgba(236,233,226,.55); }
+  .tab b { color: #c6ff4a; font-weight: 400; }
+  .ed-code { position: absolute; inset: 48px 16px 16px 0; display: flex; font-family: 'Consolas', 'Courier New', monospace; font-size: 15px; line-height: 1.9; }
+  .lines { width: 46px; text-align: right; padding-right: 16px; color: rgba(236,233,226,.18); user-select: none; }
+  .code { white-space: pre; color: #c8d0d0; }
+  .kw { color: #8fb7ff; } .fn { color: #c6ff4a; } .str { color: #d9a56b; } .tag { color: #7fb3a8; } .cm { color: rgba(236,233,226,.28); } .attr { color: #b9c8c4; } .num { color: #d9a56b; }
+
+  .preview { position: absolute; left: 984px; top: 300px; width: 752px; height: 590px; z-index: 5; border: 1px solid rgba(236,233,226,.17); background: #0b0d0e; box-shadow: 0 40px 100px rgba(0,0,0,.6); overflow: hidden; }
+  .pv-bar { height: 38px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid rgba(236,233,226,.09); background: #0a0c0d; }
+  .url { margin: 0 auto; width: 300px; height: 20px; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid rgba(236,233,226,.1); font-family: 'Consolas', monospace; font-size: 8px; color: rgba(236,233,226,.4); }
+  .url i { width: 4px; height: 4px; border-radius: 50%; background: #c6ff4a; display: block; }
+  .pv-body { position: absolute; inset: 38px 0 0; overflow: hidden; }
+  .pv-img { position: absolute; inset: 0; background-image: url('../../public/images/hero-shanghai.webp'); background-size: cover; background-position: 50% 38%; filter: brightness(.72) contrast(1.05) saturate(.85); }
+  .pv-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,5,6,.5), rgba(4,5,6,.2) 40%, rgba(4,5,6,.9)); }
+  .pv-nav { position: absolute; left: 20px; right: 20px; top: 16px; display: flex; justify-content: space-between; font-family: var(--display); font-size: 7px; letter-spacing: .16em; color: rgba(255,255,255,.55); z-index: 3; }
+  .pv-nav i { color: #c6ff4a; font-style: normal; }
+  .pv-center { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; z-index: 3; }
+  .pv-badge { display: inline-flex; gap: 6px; align-items: center; border: 1px solid rgba(198,255,74,.38); padding: 4px 8px; font-family: var(--display); font-size: 6px; letter-spacing: .18em; color: #c6ff4a; margin-bottom: 18px; }
+  .pv-title { display: flex; flex-direction: column; align-items: center; font-family: 'Xingkai', serif; font-size: 60px; line-height: 1.08; color: #f6f2e9; text-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .pv-hi { font-family: 'DIN', 'Xingkai', sans-serif; font-weight: 400; letter-spacing: -.01em; }
+  .pv-intro { margin-top: 18px; font-family: var(--display); font-size: 6px; letter-spacing: .18em; color: rgba(255,255,255,.7); line-height: 2; }
+  .pv-zh { margin-top: 5px; font-size: 8px; letter-spacing: .04em; color: rgba(255,255,255,.5); }
+  .pv-bottom { position: absolute; left: 20px; right: 20px; bottom: 12px; display: flex; justify-content: space-between; font-family: var(--display); font-size: 6px; letter-spacing: .16em; color: rgba(255,255,255,.4); z-index: 3; }
+
+  .metrics { position: absolute; left: 64px; right: 64px; top: 916px; display: flex; gap: 40px; z-index: 5; }
+  .metric { font-family: var(--display); font-size: 8px; letter-spacing: .16em; color: rgba(236,233,226,.34); }
+  .metric b { display: block; font-size: 18px; font-weight: 500; letter-spacing: .02em; color: #ece9e2; }
+  .bottom { position: absolute; left: 64px; right: 64px; bottom: 26px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  .tags { display: flex; gap: 26px; }
+  .tags span { font-size: 10px; letter-spacing: .14em; color: rgba(236,233,226,.5); }
+  .idx { font-family: var(--display); font-size: 10px; letter-spacing: .2em; color: rgba(236,233,226,.34); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow"></div><div class="grid"></div><div class="frame"></div>
+  <div class="top"><span class="meta">WANG — SELECTED WORKS</span><span class="meta">CASE 04 / WEB</span></div>
+
+  <div class="head">
+    <h1>PORTFOLIO</h1>
+    <div class="sub"><div class="cn">个人作品集网站</div><div class="en">REACT 19 / TYPESCRIPT / VITE / PURE CSS</div></div>
+  </div>
+
+  <div class="editor">
+    <div class="ed-top"><div class="lights"><i></i><i></i><i></i></div><div class="tab"><b>Hero.tsx</b> — src/components</div></div>
+    <div class="ed-code">
+      <div class="lines">01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15</div>
+      <div class="code"><span class="kw">import</span> { useClock } <span class="kw">from</span> <span class="str">'../hooks/useClock'</span>
+<span class="kw">import</span> { asset } <span class="kw">from</span> <span class="str">'../lib/asset'</span>
+
+<span class="kw">export default function</span> <span class="fn">Hero</span>() {
+  <span class="kw">const</span> time = <span class="fn">useClock</span>()
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">section</span> <span class="attr">className</span>=<span class="str">"hero"</span> <span class="attr">id</span>=<span class="str">"top"</span>&gt;
+      &lt;<span class="tag">img</span> <span class="attr">src</span>={asset(<span class="str">'/images/hero-shanghai.webp'</span>)} /&gt;
+      &lt;<span class="tag">h1</span> <span class="attr">className</span>=<span class="str">"hero__tech"</span>&gt;Hi，这里是W&lt;/<span class="tag">h1</span>&gt;
+      &lt;<span class="tag">p</span>&gt;Software Engineer — Shanghai&lt;/<span class="tag">p</span>&gt;
+    &lt;/<span class="tag">section</span>&gt;
+  )
+}</div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="pv-bar"><div class="lights"><i></i><i></i><i></i></div><div class="url"><i></i>wang.dev / portfolio</div></div>
+    <div class="pv-body">
+      <div class="pv-img"></div><div class="pv-shade"></div>
+      <div class="pv-nav"><span>王迧<i>.</i></span><span>00 首页 &nbsp; 01 慢档案 &nbsp; 02 项目 &nbsp; 03 联系</span></div>
+      <div class="pv-center">
+        <div class="pv-badge">● OPEN TO OPPORTUNITIES / 2026—27</div>
+        <div class="pv-title"><span class="pv-hi">Hi，这里是</span><span>W</span></div>
+        <div class="pv-intro">HELLO, I'M WANG — SOFTWARE DEVELOPMENT ENGINEER<br>BASED IN SHANGHAI, CHINA.</div>
+        <div class="pv-zh">把复杂的业务，拆成可靠的系统，再写成清晰的代码。</div>
+      </div>
+      <div class="pv-bottom"><span>SHANGHAI, CN — 31.23°N / 121.47°E</span><span>SCROLL TO EXPLORE</span></div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><b>0</b>UI LIBRARIES</div>
+    <div class="metric"><b>100%</b>HANDWRITTEN CSS</div>
+    <div class="metric"><b>3</b>BREAKPOINT SETS</div>
+    <div class="metric"><b>1</b>SHARED COMPONENT LIBRARY</div>
+  </div>
+
+  <div class="bottom">
+    <div class="tags"><span>React 19</span><span>TypeScript</span><span>Vite</span><span>CSS</span></div>
+    <div class="idx">04 / 04</div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

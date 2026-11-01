@@ -1,0 +1,121 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1800px; height: 1000px; background: #050606; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .frame { position: absolute; inset: 30px; border: 1px solid rgba(236,233,226,.1); pointer-events: none; z-index: 10; }
+  .top { position: absolute; left: 64px; right: 64px; top: 56px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 10; }
+  .top .l { display: flex; gap: 18px; align-items: center; }
+  .bar { width: 38px; height: 1px; background: #c6ff4a; }
+  .glow {
+    position: absolute; width: 1100px; height: 700px; left: 180px; top: 160px;
+    background: radial-gradient(ellipse, rgba(164, 196, 170, .13), transparent 65%);
+    filter: blur(40px);
+  }
+  .typewrap {
+    position: absolute; left: -46px; top: 208px; width: 1300px;
+    transform: rotate(-6deg); transform-origin: 50% 50%;
+  }
+  .row {
+    font-size: 224px; line-height: .76; font-weight: 700; letter-spacing: -.045em;
+    white-space: nowrap; color: #ece9e2;
+  }
+  .row.outline { color: transparent; -webkit-text-stroke: 1.4px rgba(236,233,226,.42); margin-left: 118px; }
+  .row.ghost { color: rgba(236,233,226,.075); margin-left: -30px; }
+  .blur {
+    position: absolute; left: -60px; top: 226px; width: 1300px;
+    transform: rotate(-6deg) scaleX(1.1); filter: blur(22px); opacity: .5;
+  }
+  .blur .row { color: rgba(173,202,184,.16); -webkit-text-stroke: 0; }
+
+  .tags { position: absolute; left: 66px; top: 792px; z-index: 12; display: flex; gap: 40px; }
+  .tags span { font-size: 12px; letter-spacing: .2em; color: rgba(236,233,226,.6); }
+
+  .info {
+    position: absolute; right: 66px; top: 210px; width: 430px; z-index: 12;
+    border-left: 1px solid rgba(236,233,226,.14); padding-left: 30px;
+  }
+  .info .cn { font-size: 26px; letter-spacing: .3em; color: #ece9e2; font-weight: 300; margin-bottom: 26px; }
+  .info .cn em { font-style: normal; color: #c6ff4a; font-size: 11px; letter-spacing: .24em; display: block; margin-top: 12px; font-family: 'DIN', sans-serif; }
+  .desc { font-size: 15px; line-height: 2; color: rgba(236,233,226,.55); font-weight: 300; }
+  .desc b { color: #ece9e2; font-weight: 500; }
+  .info .facts { margin-top: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
+  .info .facts div { font-size: 10px; letter-spacing: .18em; color: rgba(236,233,226,.35); line-height: 1.8; }
+  .info .facts b { display: block; font-size: 13px; letter-spacing: .08em; color: rgba(236,233,226,.8); font-weight: 400; }
+
+  .play {
+    position: absolute; right: 66px; bottom: 128px; width: 104px; height: 104px; z-index: 12;
+    border: 1px solid rgba(236,233,226,.25); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play::after { content: ''; border-left: 16px solid #c6ff4a; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 5px; }
+  .play::before { content: 'PLAY'; position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 9px; letter-spacing: .26em; color: rgba(236,233,226,.4); }
+  .bigidx {
+    position: absolute; right: 60px; bottom: 240px; font-size: 200px; font-weight: 700; line-height: 1;
+    color: transparent; -webkit-text-stroke: 1px rgba(236,233,226,.1); z-index: 4;
+  }
+
+  .timeline {
+    position: absolute; left: 66px; right: 66px; bottom: 54px; z-index: 12;
+    border-top: 1px solid rgba(236,233,226,.14); display: flex; justify-content: space-between; padding-top: 14px;
+  }
+  .ticks { display: flex; gap: 9px; align-items: flex-end; }
+  .ticks i { width: 1px; height: 6px; background: rgba(236,233,226,.22); display: block; }
+  .ticks i.big { height: 12px; background: rgba(236,233,226,.5); }
+  .timecode { font-size: 11px; letter-spacing: .2em; color: rgba(236,233,226,.4); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="glow"></div>
+
+  <div class="blur">
+    <div class="row">KINETIC</div>
+    <div class="row">KINETIC</div>
+    <div class="row">KINETIC</div>
+  </div>
+
+  <div class="typewrap">
+    <div class="row">KINETIC</div>
+    <div class="row outline">KINETIC</div>
+    <div class="row ghost">KINETIC</div>
+  </div>
+
+  <div class="bigidx">04</div>
+  <div class="frame"></div>
+
+  <div class="top">
+    <div class="l"><span class="bar"></span><span class="meta">Kinetic 鈥?Type Experiment</span></div>
+    <span class="meta">Motion / Type / 2023</span>
+  </div>
+
+  <div class="info">
+    <div class="cn">鍔?鍔?em>TYPE IN MOTION</em></div>
+    <div class="desc">
+      涓€缁勫叧浜庛€岄€熷害銆嶇殑瀛椾綋瀹為獙銆備互鍗曞瓧閲嶅銆侀敊浣嶄笌妯＄硦妯℃嫙杩愬姩娈嬪奖锛?b>KINETIC</b> 灏嗛潤鎬佸瓧褰㈡媶瑙ｄ负鏃堕棿杞翠笂鐨勮繛缁抚锛屽苟寤朵几涓哄睍瑙堟捣鎶ヤ笌寮€鍦哄奖鍍忋€?    </div>
+    <div class="facts">
+      <div>FORMAT<b>Poster / 700 脳 1000</b></div>
+      <div>FRAME RATE<b>24 FPS 路 6.0S LOOP</b></div>
+      <div>TYPE<b>DIN Next / 鑷粯鍙樹綋</b></div>
+      <div>OUTPUT<b>Print / Screen / Motion</b></div>
+    </div>
+  </div>
+
+  <div class="tags"><span>鍔ㄦ€佸瓧浣?/span><span>瑙嗚瀹為獙</span><span>灞曡娴锋姤</span></div>
+
+  <div class="play"></div>
+
+  <div class="timeline">
+    <div class="ticks">
+      <i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i><i></i><i></i><i></i><i></i><i class="big"></i>
+    </div>
+    <span class="timecode">00:00:06:00 &nbsp;/&nbsp; 04 / 04</span>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+

@@ -1,0 +1,106 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  @font-face {
+    font-family: 'NotoSerif';
+    src: url('../../public/fonts/NotoSerifSC-subset.woff2') format('woff2');
+    font-weight: 200 900;
+  }
+  body { width: 1200px; height: 1450px; background: #080705; }
+  .stage { position: absolute; inset: 0; overflow: hidden; background: #080705; }
+  .photo {
+    position: absolute; inset: 0;
+    background-image: url('../stock/packaging-hi.jpg');
+    background-size: cover; background-position: 52% 34%;
+    filter: sepia(.22) saturate(.62) contrast(1.06) brightness(.72);
+    transform: scale(1.02);
+  }
+  .shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(8,7,5,.72) 0%, rgba(8,7,5,.08) 26%, rgba(8,7,5,.06) 44%, rgba(8,7,5,.72) 78%, rgba(8,7,5,.96) 100%),
+      linear-gradient(90deg, rgba(8,7,5,.55) 0%, transparent 52%),
+      radial-gradient(circle at 72% 26%, rgba(196,150,96,.18), transparent 55%);
+  }
+  .frame { position: absolute; inset: 34px; border: 1px solid rgba(236,233,226,.2); pointer-events: none; z-index: 5; }
+  .top { position: absolute; left: 64px; right: 64px; top: 58px; display: flex; justify-content: space-between; z-index: 6; }
+  .top .meta { color: rgba(240,232,219,.7); }
+  .side {
+    position: absolute; right: 52px; top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: center;
+    font-size: 11px; letter-spacing: .4em; color: rgba(240,232,219,.45); z-index: 6;
+    white-space: nowrap;
+  }
+  .wordmark {
+    position: absolute; left: 60px; top: 760px; z-index: 6;
+    font-family: 'NotoSerif', 'Songti SC', serif; font-weight: 300;
+    font-size: 250px; line-height: .8; letter-spacing: .04em; color: #f3ead9;
+    text-shadow: 0 20px 80px rgba(0,0,0,.55);
+  }
+  .cn {
+    position: absolute; left: 68px; top: 1000px; z-index: 6;
+    font-size: 25px; letter-spacing: .48em; color: rgba(243,234,217,.88); font-weight: 300;
+  }
+  .cn small { display: block; margin-top: 18px; font-size: 11px; letter-spacing: .34em; color: rgba(243,234,217,.5); font-family: 'DIN', sans-serif; }
+  .desc {
+    position: absolute; left: 68px; top: 1120px; width: 480px; z-index: 6;
+    font-size: 14px; line-height: 2; color: rgba(240,232,219,.6); font-weight: 300;
+  }
+  .seal {
+    position: absolute; right: 76px; bottom: 168px; z-index: 6;
+    width: 120px; height: 120px; border: 1px solid rgba(240,232,219,.35); border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    font-size: 9px; letter-spacing: .24em; color: rgba(240,232,219,.65); text-align: center;
+  }
+  .seal b { font-size: 22px; letter-spacing: .12em; font-weight: 400; color: #f3ead9; font-family: 'NotoSerif', serif; }
+  .bottom {
+    position: absolute; left: 64px; right: 64px; bottom: 58px; z-index: 6;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-top: 1px solid rgba(240,232,219,.18); padding-top: 20px;
+  }
+  .bottom .tags { display: flex; gap: 34px; }
+  .bottom .tags span { font-size: 12px; letter-spacing: .18em; color: rgba(240,232,219,.62); }
+  .bottom .idx { font-size: 12px; letter-spacing: .2em; color: rgba(240,232,219,.4); }
+  .swatches { position: absolute; right: 76px; top: 240px; display: flex; gap: 8px; z-index: 6; }
+  .swatches i { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(240,232,219,.28); display: block; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="photo"></div>
+  <div class="shade"></div>
+  <div class="frame"></div>
+
+  <div class="top">
+    <span class="meta">SILT 鈥?Oriental Fragrance</span>
+    <span class="meta">Brand / Packaging / 2024</span>
+  </div>
+  <div class="side">ORIENTAL WOODS 鈥?EST. 2024</div>
+
+  <div class="swatches">
+    <i style="background:#f0e6d2"></i>
+    <i style="background:#b98a4d"></i>
+    <i style="background:#4b3a27"></i>
+    <i style="background:#12100c"></i>
+  </div>
+
+  <div class="wordmark">SILT</div>
+  <div class="cn">鏈?璐?涔?鎭?small>THE SCENT OF SLOW TIME</small></div>
+  <div class="desc">
+    浠ャ€屾椂闂寸殑娌夌Н銆嶄负姒傚康锛屼负涓滄柟鏈ㄨ川棣欏搧鐗?SILT 寤虹珛浠庡懡鍚嶃€佸瓧浣撱€佸寘瑁呭埌绌洪棿褰卞儚鐨勫畬鏁磋瑙夎瑷€銆備綆楗卞拰鐨勭惀鐝€涓庡ⅷ鑹诧紝璁╂皵鍛冲厛浜庤瑷€琚湅瑙併€?  </div>
+
+  <div class="seal"><b>S</b>NO. 01<br>EDITION</div>
+
+  <div class="bottom">
+    <div class="tags"><span>鍝佺墝绛栫暐</span><span>鍖呰璁捐</span><span>鑹烘湳鎸囧</span></div>
+    <div class="idx">03 / 04</div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+
+
+

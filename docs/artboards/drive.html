@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { width: 1200px; height: 1450px; background: #080706; }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(236,220,200,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(236,220,200,.05) 1px, transparent 1px); background-size: 60px 60px; }
+  .grid::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(8,7,6,0) 18%, rgba(8,7,6,.92) 76%); }
+  .glow { position: absolute; width: 800px; height: 700px; left: 180px; top: 340px; background: radial-gradient(ellipse, rgba(190,130,70,.16), transparent 65%); filter: blur(30px); }
+  .frame { position: absolute; inset: 30px; border: 1px solid rgba(236,233,226,.1); }
+  .top { position: absolute; left: 56px; right: 56px; top: 54px; display: flex; justify-content: space-between; z-index: 5; }
+  .head { position: absolute; left: 56px; top: 120px; z-index: 5; }
+  .head h1 { font-family: var(--display); font-size: 226px; font-weight: 700; line-height: .82; letter-spacing: -.055em; color: #f3ede3; margin-left: -8px; }
+  .head .sub { margin-top: 20px; font-size: 19px; letter-spacing: .1em; color: rgba(243,237,227,.78); }
+  .head .en { margin-top: 12px; font-family: var(--display); font-size: 9px; letter-spacing: .24em; color: rgba(243,237,227,.36); }
+  .badge { margin-top: 22px; display: inline-flex; gap: 10px; align-items: center; border: 1px solid rgba(255,180,90,.35); padding: 6px 10px; font-family: var(--display); font-size: 8px; letter-spacing: .16em; color: #ffb45a; }
+  .badge i { width: 5px; height: 5px; border-radius: 50%; background: #ffb45a; box-shadow: 0 0 12px rgba(255,180,90,.7); }
+
+  .sys { position: absolute; left: 80px; right: 80px; top: 530px; height: 650px; z-index: 4; }
+  .src { position: absolute; width: 230px; height: 96px; border: 1px solid rgba(255,180,90,.32); background: rgba(255,180,90,.035); }
+  .src .n { position: absolute; left: 14px; top: 12px; font-family: var(--display); font-size: 9px; letter-spacing: .16em; color: #ffb45a; }
+  .src .v { position: absolute; left: 14px; bottom: 12px; font-family: var(--display); font-size: 21px; letter-spacing: .04em; color: #f3ede3; }
+  .src .s { position: absolute; right: 14px; bottom: 14px; font-family: var(--display); font-size: 7px; letter-spacing: .12em; color: rgba(243,237,227,.3); }
+  .src.a { left: 0; top: 0; }
+  .src.b { right: 0; top: 0; }
+
+  .wire { position: absolute; background: rgba(255,180,90,.5); }
+  .w1 { left: 115px; top: 96px; width: 1px; height: 70px; }
+  .w2 { right: 115px; top: 96px; width: 1px; height: 70px; }
+  .w3 { left: 115px; right: 115px; top: 166px; height: 1px; }
+  .w4 { left: 50%; top: 166px; width: 1px; height: 54px; }
+  .diode { position: absolute; left: 50%; top: 154px; width: 12px; height: 12px; transform: translateX(-50%) rotate(45deg); border: 1px solid rgba(255,180,90,.6); background: #0c0a08; }
+  .fail { position: absolute; left: 50%; top: 220px; transform: translateX(-50%); padding: 7px 14px; border: 1px solid rgba(255,180,90,.4); font-family: var(--display); font-size: 8px; letter-spacing: .18em; color: rgba(255,180,90,.85); background: #0c0a08; }
+
+  .ecu { position: absolute; left: 50%; top: 280px; transform: translateX(-50%); width: 330px; height: 170px; border: 1px solid rgba(236,233,226,.24); background: linear-gradient(160deg, rgba(255,255,255,.045), rgba(255,255,255,.006)); box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+  .ecu::before { content: ''; position: absolute; inset: 14px; border: 1px dashed rgba(255,180,90,.16); }
+  .ecu .n { position: absolute; left: 18px; top: 16px; font-family: var(--display); font-size: 26px; letter-spacing: .08em; color: #f3ede3; }
+  .ecu .k { position: absolute; left: 18px; top: 50px; font-family: var(--display); font-size: 8px; letter-spacing: .18em; color: #ffb45a; }
+  .ecu .s { position: absolute; left: 18px; bottom: 16px; font-family: var(--display); font-size: 7px; letter-spacing: .14em; line-height: 1.9; color: rgba(243,237,227,.38); }
+  .ecu .led { position: absolute; right: 18px; top: 18px; width: 7px; height: 7px; border-radius: 50%; background: #c6ff4a; box-shadow: 0 0 14px rgba(198,255,74,.6); }
+
+  .bus { position: absolute; left: 0; right: 0; top: 530px; height: 1px; background: rgba(198,255,74,.55); }
+  .bus::before, .bus::after { content: ''; position: absolute; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: #c6ff4a; }
+  .bus::before { left: 0; } .bus::after { right: 0; }
+  .node { position: absolute; top: 530px; transform: translateY(-50%); padding: 5px 10px; border: 1px solid rgba(198,255,74,.3); background: #0a0c0a; font-family: var(--display); font-size: 7px; letter-spacing: .12em; color: rgba(236,233,226,.62); }
+  .n1 { left: 80px; } .n2 { left: 340px; } .n3 { left: 600px; } .n4 { left: 860px; } .n5 { right: 0; }
+  .stub { position: absolute; top: 493px; width: 1px; height: 74px; background: rgba(198,255,74,.25); }
+  .s1 { left: 110px; } .s2 { left: 370px; } .s3 { left: 630px; } .s4 { left: 890px; } .s5 { right: 30px; }
+  .bus-label { position: absolute; left: 0; top: 560px; font-family: var(--display); font-size: 7px; letter-spacing: .16em; color: rgba(198,255,74,.5); }
+
+  .trace { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; border-top: 1px solid rgba(236,233,226,.12); }
+  .trace svg { position: absolute; left: 0; right: 0; top: 18px; width: 100%; height: 78px; }
+  .trace-meta { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; font-family: var(--display); font-size: 7px; letter-spacing: .14em; color: rgba(236,233,226,.3); }
+
+  .side { position: absolute; right: 26px; top: 52%; writing-mode: vertical-rl; transform: translateY(-50%); font-family: var(--display); font-size: 8px; letter-spacing: .3em; color: rgba(236,233,226,.25); z-index: 5; }
+  .bottom { position: absolute; left: 56px; right: 56px; bottom: 48px; display: flex; justify-content: space-between; align-items: center; z-index: 5; }
+  .tags { display: flex; gap: 26px; }
+  .tags span { font-size: 10px; letter-spacing: .14em; color: rgba(236,233,226,.5); }
+  .idx { font-family: var(--display); font-size: 10px; letter-spacing: .2em; color: rgba(236,233,226,.34); }
+  .bigidx { position: absolute; right: 60px; bottom: 120px; font-family: var(--display); font-size: 190px; font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1px rgba(236,233,226,.08); z-index: 2; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="grid"></div><div class="glow"></div><div class="frame"></div>
+  <div class="top"><span class="meta">WANG — SELECTED WORKS</span><span class="meta">CASE 03 / AUTOMOTIVE</span></div>
+
+  <div class="head">
+    <h1>DRIVE</h1>
+    <div class="sub">车载冗余电源与诊断</div>
+    <div class="en">TMS570 / RM57L / CAN / REDUNDANT POWER</div>
+    <div class="badge"><i></i> CAN BUS / DIAGNOSTIC / REDUNDANT POWER</div>
+  </div>
+
+  <div class="sys">
+    <div class="src a"><span class="n">PWR A / PRIMARY</span><span class="v">24.0 V</span><span class="s">OK</span></div>
+    <div class="src b"><span class="n">PWR B / BACKUP</span><span class="v">24.0 V</span><span class="s">STANDBY</span></div>
+    <div class="wire w1"></div><div class="wire w2"></div><div class="wire w3"></div><div class="wire w4"></div>
+    <div class="diode"></div>
+    <div class="fail">REDUNDANT POWER / ORING</div>
+
+    <div class="ecu">
+      <div class="n">TMS570</div>
+      <div class="k">SAFETY MCU / LOCKSTEP</div>
+      <div class="led"></div>
+      <div class="s">TIMER / UART / CAN<br>RM57L · IPC · ACTUATOR</div>
+    </div>
+
+    <div class="stub s1"></div><div class="stub s2"></div><div class="stub s3"></div><div class="stub s4"></div><div class="stub s5"></div>
+    <div class="bus"></div>
+    <div class="node n1">TMS570</div><div class="node n2">RM57L</div><div class="node n3">IPC</div><div class="node n4">ACTUATOR</div><div class="node n5">DIAG</div>
+    <div class="bus-label">CAN / ISO 11898 · DIAGNOSTIC · REDUNDANT BUS</div>
+
+    <div class="trace">
+      <svg viewBox="0 0 1040 78" preserveAspectRatio="none">
+        <path d="M0 48 L80 48 L80 22 L140 22 L140 58 L210 58 L210 18 L280 18 L280 52 L360 52 L360 30 L430 30 L430 60 L510 60 L510 20 L580 20 L580 48 L660 48 L660 26 L730 26 L730 58 L810 58 L810 22 L880 22 L880 50 L950 50 L950 30 L1040 30" fill="none" stroke="#ffb45a" stroke-width="1.2" opacity=".8"/>
+      </svg>
+      <div class="trace-meta"><span>CAN_H / CAN_L</span><span>FRAME / DIAGNOSTIC</span><span>REDUNDANT PATH</span><span>0.0 S — 4.0 S</span></div>
+    </div>
+  </div>
+
+  <div class="side">AUTOMOTIVE EMBEDDED — SCHEMATIC / CAN / BOARD BRING-UP</div>
+  <div class="bigidx">03</div>
+  <div class="bottom">
+    <div class="tags"><span>TMS570</span><span>CAN</span><span>冗余电源</span><span>硬件调试</span></div>
+    <div class="idx">03 / 04</div>
+  </div>
+</div>
+<div class="grain"></div>
+</body>
+</html>
+
+
