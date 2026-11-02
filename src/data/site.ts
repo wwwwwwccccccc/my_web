@@ -41,8 +41,8 @@ export const projects: Project[] = [
     category: 'Industrial Vision / C++',
     year: '2024',
     tags: ['C++ / Qt', 'OpenCV', '多线程', '机器视觉'],
-    cover: '/images/work-inspect.jpg',
-    alt: 'INSPECT 工业视觉检测系统：四路相机监控画面与缺陷标记界面',
+    cover: '/images/work-inspect.webp',
+    alt: '四路相机监控画面与缺陷标记界面',
     summary:
       '为拉挤板材产线做在线缺陷检测：四路相机、1 fps 采集、缺陷识别与自动标记，替代人工目检。',
     description: [
@@ -65,7 +65,7 @@ export const projects: Project[] = [
     category: 'Systems / Linux',
     year: '2023',
     tags: ['RK3588', 'FPGA', 'PCIe', 'Linux 驱动'],
-    cover: '/images/work-link.jpg',
+    cover: '/images/work-link.webp',
     alt: 'LINK 异构算力高速传输：RK3588 与 FPGA 之间的 PCIe 链路示意',
     summary:
       '在 RK3588 与 FPGA 之间打通 PCIe 2.0 x2 高速链路，完成内核裁剪、设备树修改、驱动移植与速度测试。',
@@ -89,7 +89,7 @@ export const projects: Project[] = [
     category: 'Embedded / Automotive',
     year: '2023',
     tags: ['TMS570', 'CAN', '冗余电源', '硬件调试'],
-    cover: '/images/work-drive.jpg',
+    cover: '/images/work-drive.webp',
     alt: 'DRIVE 车载冗余电源与诊断：车载控制器、CAN 总线与冗余电源路径示意',
     summary:
       '参与数字胶轮车导向系统的冗余电源板设计与 TMS570 / RM57L 外设调试，配合完成工控机上车联调。',
@@ -113,7 +113,7 @@ export const projects: Project[] = [
     category: 'Web / React',
     year: '2026',
     tags: ['React 19', 'TypeScript', 'Vite', 'CSS'],
-    cover: '/images/work-portfolio.jpg',
+    cover: '/images/work-portfolio.webp',
     alt: 'PORTFOLIO 个人作品集网站：代码编辑器与暗色首页预览',
     summary:
       '你正在看的这个站点：全屏影像首页、项目详情弹窗、响应式布局，动画与排版全部手写 CSS。',

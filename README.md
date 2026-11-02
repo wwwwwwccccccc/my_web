@@ -46,6 +46,82 @@ corepack pnpm@10 preview
 
 ### 已经安装好 pnpm 的情况
 
+### 环境要求
+
+- Node.js **20.19+ 或 22.12+**（Vite 7 要求；建议 Node 22 LTS，本项目在 Node 24 下验证）
+- 包管理器：**pnpm 11**（仓库自带 `pnpm-lock.yaml`，不要用 npm 生成新的 lockfile）
+
+### Windows PowerShell（推荐，不需要全局安装 pnpm）
+
+```powershell
+# 第一次：安装依赖
+corepack.cmd pnpm@11 install
+
+# 开发
+corepack.cmd pnpm@11 dev
+# http://127.0.0.1:5174/ 或 http://localhost:5174/
+
+# 类型检查 + 生产构建
+corepack.cmd pnpm@11 build
+
+# 本地预览生产构建
+corepack.cmd pnpm@11 preview
+# http://127.0.0.1:4173/
+```
+
+`corepack.cmd pnpm@11 ...` 是 Node 自带的 Corepack 用法：它会下载并运行 pnpm 11，**不依赖全局 `pnpm` 命令**，也不会碰到 PowerShell 禁止运行 `pnpm.ps1` 的问题。第一次运行需要联网下载 pnpm。
+
+> 如果 Node 安装不完整、连 `corepack` 也没有，可以先执行 `npm.cmd install -g pnpm@11`，然后统一使用 `pnpm.cmd` 运行下面的命令。
+
+### macOS / Linux
+
+```bash
+corepack pnpm@11 install
+corepack pnpm@11 dev
+corepack pnpm@11 build
+corepack pnpm@11 preview
+```
+
+### 已经安装好 pnpm 的情况
+
+### 环境要求
+
+- Node.js **20.19+ 或 22.12+**（Vite 7 要求；建议 Node 22 LTS，本项目在 Node 24 下验证）
+- 包管理器：**pnpm 10**（仓库自带 `pnpm-lock.yaml`，不要用 npm 生成新的 lockfile）
+
+### Windows PowerShell（推荐，不需要全局安装 pnpm）
+
+```powershell
+# 第一次：安装依赖
+corepack.cmd pnpm@10 install
+
+# 开发
+corepack.cmd pnpm@10 dev
+# http://127.0.0.1:5174/ 或 http://localhost:5174/
+
+# 类型检查 + 生产构建
+corepack.cmd pnpm@10 build
+
+# 本地预览生产构建
+corepack.cmd pnpm@10 preview
+# http://127.0.0.1:4173/
+```
+
+`corepack.cmd pnpm@10 ...` 是 Node 自带的 Corepack 用法：它会下载并运行 pnpm 10，**不依赖全局 `pnpm` 命令**，也不会碰到 PowerShell 禁止运行 `pnpm.ps1` 的问题。第一次运行需要联网下载 pnpm。
+
+> 如果 Node 安装不完整、连 `corepack` 也没有，可以先执行 `npm.cmd install -g pnpm@10`，然后统一使用 `pnpm.cmd` 运行下面的命令。
+
+### macOS / Linux
+
+```bash
+corepack pnpm@10 install
+corepack pnpm@10 dev
+corepack pnpm@10 build
+corepack pnpm@10 preview
+```
+
+### 已经安装好 pnpm 的情况
+
 ```bash
 pnpm install
 pnpm dev
@@ -108,7 +184,7 @@ corepack.cmd pnpm@10 approve-builds
 
 勾选 esbuild 后重新运行构建。
 
-技术栈：React 19、TypeScript、Vite 7。无 UI 框架、无动画库，动效由 CSS + IntersectionObserver 实现。
+技术栈：React 19、TypeScript、Vite 7、ogl（FlexCarousel WebGL 轮播）。无 UI 框架、无动画库，其余动效由 CSS + IntersectionObserver 实现。
 
 ---
 
@@ -116,13 +192,13 @@ corepack.cmd pnpm@10 approve-builds
 
 导航：**首页 / 慢档案 / 快生活**。
 
-| 模块     | 内容                                                         |
-| -------- | ------------------------------------------------------------ |
-| Hero     | 上海夜景全屏背景、TechText 标题「Hi，这里是 / W」、OPEN TO OPPORTUNITIES、上海坐标/当地时间；已移除中部介绍文字与 CTA |
+| 模块         | 内容                                                                                                                 |
+| ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Hero         | 上海夜景全屏背景、TechText 标题「Hi，这里是 / W」、OPEN TO OPPORTUNITIES、上海坐标/当地时间；已移除中部介绍文字与 CTA |
 | About Me | 人像/城市图 + 自我介绍、当前身份、电话、邮箱、标签（嵌入式 / LTE） |
-| 慢档案   | 中国省份地图 + 右侧照片面板；点击省份展开照片和文字；面板内提供本地照片上传入口 |
-| 快生活   | INSPECT（工业视觉检测）、LINK（RK3588/FPGA 高速传输）、DRIVE（车载冗余电源与诊断）、PORTFOLIO（本站） |
-| 结尾     | 一句话「欢迎你来参观我的生命一角」+ 回到顶部，不再有整屏联系模块；它位于 folio 之外，01/02 切换不影响它 |
+| 慢档案     | 中国省份地图 + 右侧照片面板；点击省份展开照片和文字；面板内提供本地照片上传入口 |
+| 快生活     | FlexCarousel 水平 WebGL 轮播：INSPECT / LINK / DRIVE / PORTFOLIO；每个项目图下方显示项目名，点击中心卡片打开详情 |
+| 结尾         | 一句话「欢迎你来参观我的生命一角」+ 回到顶部，不再有整屏联系模块；它位于 folio 之外，01/02 切换不影响它 |
 
 慢档案与快生活现在位于同一个 **100svh 水平 folio** 中：页面不再把 01/02 纵向堆叠，点击导航 01/02，或点击右侧不显眼的圆形箭头，会横向滑动切换；每个 panel 内部可独立纵向滚动。移动端导航隐藏，使用右下角的 `01 / 02` 箭头切换。
 
@@ -154,9 +230,66 @@ src/data/site.ts
 - 点击导航「慢档案 / 快生活」会滚动到 folio 并切换对应 panel；
 - 右侧中部有一个低对比度的圆形箭头和 `01 / 02` 计数，点击即可左右切换；
 - 切换时用 `translateX` 滑动，当前 panel 会重置到顶部；
-- 两个 panel 各自内部纵向滚动，因此 02 的项目列表不会再把整个页面拉长；
+- 两个 panel 各自内部纵向滚动，因此 02 的轮播和项目信息不会再把整个页面拉长；
 - 移动端导航隐藏，切换器移到右下角（`01 / 02` + 箭头）；
 - 非当前 panel 使用 `inert` / `aria-hidden`，不会抢键盘焦点。
+
+---
+
+## 快生活轮播（FlexCarousel）
+
+02 的内容现在是 React Bits 的 **FlexCarousel**，使用 `ogl` 在 WebGL2 中绘制弯曲的图片轨道：
+
+- 组件源码：`src/components/FlexCarousel.tsx`
+- 样式：`src/components/FlexCarousel.css`
+- 依赖：`ogl`（已在 `package.json`）
+- 数据来自 `projects`，四张封面按自然宽高比排列；
+- 支持横向拖动、横向滚轮、触控板、← → 方向键；
+- 自动轮播：以约 32px/s 的速度**连续缓慢滚动**，不是每隔几秒跳一张；鼠标悬停、键盘聚焦或交互后暂停，离开后恢复；
+- 鼠标悬停在卡片上时，卡片外围出现一圈低对比度边框，并做缓慢的明暗“扇动”；
+- 点击任意项目卡片会打开项目详情卡（`focusOnClick={false}` + `selectAnyClick` + `onSelect`）；
+- `captureWheel={false}`：纵向滚轮不会被轮播吃掉，02 panel 仍可正常上下滚动；横向滚轮/触控板才移动轮播；
+- 使用 `preset="liquid"`、`intro="rise"`、`cardHeight={0.64}`，卡片比最初版本放大约 23%；
+- 在组件里增加了 `cardLabels` 扩展：每张卡片下方用 HTML 覆盖层显示对应项目名，随拖动/弯曲实时跟随（不再显示副标题小字）；
+- 内置 `captions` 关闭，避免和自定义项目名重复；
+- 轮播需要浏览器支持 **WebGL2**；不支持时该区域不会绘制卡片。
+
+---
+
+## 项目详情卡（02）
+
+点击轮播中的任意项目图，会打开一个深色编辑感详情卡：
+
+- 左边：项目封面图；
+- 右边：`NO. 编号`、项目名、分类/年份胶囊、简介、项目背景、角色/周期/交付、技术标签和操作按钮；
+- 颜色已按站点深色背景重新处理，而不是照搬参考图的米白纸卡；
+- 组件：`src/components/ProjectDialog.tsx`
+- 样式：`src/styles/global.css` 里的 `.project-sheet*`。
+
+项目详情的内容都来自 `src/data/site.ts` 的 `projects`：
+
+| 字段 | 显示位置 |
+|---|---|
+| `title` | 轮播下方项目名 + 详情卡大标题 |
+| `subtitle` | 保留在数据里，当前不显示 |
+| `summary` | 详情卡简介（第一段） |
+| `description` | 详情卡正文段落（数组） |
+| `facts` | 详情卡的角色 / 周期 / 交付行 |
+| `tags` | 技术标签 |
+| `category` / `year` | 胶囊、右上角 CASE 年份 |
+| `cover` | 轮播封面 + 详情卡左侧图片 |
+| `alt` | 图片替代文本 |
+| `index` | `NO. 01` 编号 |
+| `focus` | 图片 `object-position`，控制裁切位置 |
+
+如果要改某一个项目的介绍，找到 `projects` 里对应的 `id`，改 `summary` 和 `description` 即可；封面图放在 `public/images/`，改 `cover` 路径。
+
+当前项目封面映射：
+
+- `01 INSPECT` → `work-inspect.webp`
+- `02 LINK` → `work-link.webp`
+- `03 DRIVE` → `work-drive.webp`
+- `04 PORTFOLIO` → `work-portfolio.webp`
 
 ---
 
@@ -308,27 +441,27 @@ Remove-Item Env:BASE_URL
 
 macOS / Linux：
 
+```powershell
+# Windows PowerShell：先设置环境变量，再构建
+$env:BASE_URL="/repo/"
+corepack.cmd pnpm@11 build
+Remove-Item Env:BASE_URL
+```
+
+macOS / Linux：
+
+```powershell
+# Windows PowerShell：先设置环境变量，再构建
+$env:BASE_URL="/repo/"
+corepack.cmd pnpm@10 build
+Remove-Item Env:BASE_URL
+```
+
+macOS / Linux：
+
 ```bash
 BASE_URL=/repo/ pnpm build
 ```
-
----
-
-## 关于简历与当前内容（重要）
-
-你的简历 `王迧-简历5.pdf` 是 **嵌入式 / 软件方向**（武汉理工大学硕士、机器视觉检测、RK3588/FPGA、Qt/C++），与你现在的「基带软件开发工程师 / 上海」身份一致。
-
-当前处理方式：
-
-- **真实信息**：姓名、邮箱、电话来自简历；现居上海、基带软件开发工程师身份来自你的说明。
-- **About Me 图片**：已换成你提供的苏州东方之门照片；后续替换 `public/images/about-portrait.webp` 即可。
-- **慢档案**：地图中的 7 个省份、10 张照片和文案目前是示例；上海/武汉/滕州的叙事来自你的城市与简历项目，其余是示例旅行片段。照片一部分来自 Picsum（Unsplash）示例图，一张雨夜车窗为生成图；请全部替换成你自己的照片和真实经历。
-- **本地照片上传**：入口会把图片保存在当前浏览器的 IndexedDB 中，刷新后仍在；换设备/浏览器不同步，真正云端保存需要后端/对象存储，当前静态站点没有该能力。
-- **项目来源**：INSPECT / LINK / DRIVE 的内容来自简历中的真实项目（工业视觉检测、RK3588/FPGA PCIe、车载硬件）；PORTFOLIO 是本站本身。导航中的「快生活」指向这组项目。
-- **封面是概念稿**：四张封面为这版网站单独设计的视觉稿，不是真实系统截图；请替换成你的项目截图或界面图。
-- **累计访问人数是本机的**：没有后端，统计的是当前浏览器的访问次数，不代表全站真实人数；如果要做全站统计，需要接第三方统计服务或后端。
-- 请把真实项目图与更完整的项目信息发我，或在 `src/data/site.ts` 中替换。
-
 ---
 
 ## 已知边界 / 下一版可做

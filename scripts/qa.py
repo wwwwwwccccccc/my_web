@@ -44,21 +44,38 @@ with sync_playwright() as p:
     page.set_viewport_size({"width": 1700, "height": 1000})
     page.wait_for_timeout(300)
 
-    # Open the horizontal 02 panel before clicking project cards.
+    # Open the horizontal 02 panel before testing the carousel.
     page.locator(".nav__link", has_text="快生活").click()
-    page.wait_for_timeout(1000)
+    page.wait_for_timeout(3200)
 
-    # All modals open / close, images load.
-    count = page.locator(".work").count()
-    for i in range(count):
-        page.locator(".work").nth(i).click()
-        page.wait_for_timeout(500)
+    carousel = page.locator(".flex-carousel")
+    print(
+        "carousel:",
+        "canvas=", page.locator(".flex-carousel canvas").count(),
+        "labels=", page.locator(".flex-carousel__card-label").all_inner_texts(),
+    )
+
+    # Each centered project opens the existing case dialog.
+    for i in range(4):
+        carousel.focus()
+        page.wait_for_timeout(250)
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(600)
         modal = page.locator(".modal")
-        title = page.locator(".modal__title").inner_text()
-        img_ok = page.locator(".modal__media-img").evaluate("i => i.naturalWidth > 0 && i.complete")
-        print(f"modal {i}: {title} visible={modal.is_visible()} img={img_ok}")
-        page.keyboard.press("Escape")
-        page.wait_for_timeout(350)
+        title = page.locator(".project-sheet__title").inner_text() if modal.count() else "(none)"
+        img_ok = (
+            page.locator(".project-sheet__image").evaluate("i => i.naturalWidth > 0 && i.complete")
+            if modal.count()
+            else False
+        )
+        print(f"modal {i}: {title} visible={modal.is_visible() if modal.count() else False} img={img_ok}")
+        if modal.count():
+            page.keyboard.press("Escape")
+            page.wait_for_timeout(350)
+        if i < 3:
+            carousel.focus()
+            page.keyboard.press("ArrowRight")
+            page.wait_for_timeout(750)
 
     # Nav anchors.
     page.locator(".nav__link", has_text="快生活").click()

@@ -1,0 +1,226 @@
+.flex-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+  outline: none;
+}
+
+.flex-carousel[data-hover='open'] {
+  cursor: zoom-in;
+}
+
+.flex-carousel[data-hover='close'] {
+  cursor: zoom-out;
+}
+
+.flex-carousel[data-dragging] {
+  cursor: grabbing;
+}
+
+.flex-carousel:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(128, 128, 140, 0.55);
+}
+
+.flex-carousel__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + var(--flex-carousel-half) * var(--flex-carousel-lift, 1) + 22px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  pointer-events: none;
+  text-align: center;
+  animation: flex-carousel-reveal 900ms ease both;
+}
+
+.flex-carousel__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  animation: flex-carousel-title 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flex-carousel__subtitle {
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.flex-carousel__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+  transition: opacity 400ms ease;
+}
+
+.flex-carousel__count[data-hidden] {
+  opacity: 0;
+}
+
+.flex-carousel__digits {
+  display: inline-flex;
+}
+
+.flex-carousel__digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+
+.flex-carousel__reel {
+  display: flex;
+  flex-direction: column;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.flex-carousel__reel span {
+  height: 1em;
+}
+
+.flex-carousel__slash {
+  opacity: 0.6;
+}
+
+.flex-carousel__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- per-card project labels ---------- */
+
+.flex-carousel__labels {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.flex-carousel__hover-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 159, 207, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, width, height, opacity;
+  animation: flex-carousel-border-flutter 3.4s ease-in-out infinite;
+}
+
+@keyframes flex-carousel-border-flutter {
+  0%,
+  100% {
+    border-color: rgba(255, 159, 207, 0.2);
+    box-shadow: 0 0 0 rgba(255, 159, 207, 0);
+  }
+
+  42% {
+    border-color: rgba(255, 159, 207, 0.5);
+    box-shadow: 0 0 18px rgba(255, 159, 207, 0.08);
+  }
+
+  68% {
+    border-color: rgba(236, 233, 226, 0.34);
+    box-shadow: 0 0 8px rgba(255, 159, 207, 0.035);
+  }
+}
+
+.flex-carousel__card-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 180px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-warm);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition: opacity 0.22s ease;
+}
+
+.flex-carousel__card-label-title {
+  font-family: var(--display);
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.flex-carousel__card-label-subtitle {
+  font-family: var(--display);
+  font-size: 8px;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .flex-carousel__card-label-title {
+    font-size: 12px;
+  }
+
+  .flex-carousel__card-label-subtitle {
+    font-size: 7px;
+  }
+}
+
+@keyframes flex-carousel-title {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flex-carousel-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flex-carousel__caption,
+  .flex-carousel__title {
+    animation: none;
+  }
+
+  .flex-carousel__reel {
+    transition: none;
+  }
+}

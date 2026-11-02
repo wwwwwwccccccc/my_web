@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Archive from './Archive'
-import Works from './Works'
 import type { Project } from '../data/site'
 
 export type FolioId = 'archive' | 'works'
+
+const Works = lazy(() => import('./Works'))
 
 type Props = {
   active: FolioId
@@ -14,6 +15,11 @@ type Props = {
 export default function Folio({ active, onChange, onOpenProject }: Props) {
   const archiveRef = useRef<HTMLDivElement>(null)
   const worksRef = useRef<HTMLDivElement>(null)
+  const [worksVisited, setWorksVisited] = useState(active === 'works')
+
+  useEffect(() => {
+    if (active === 'works') setWorksVisited(true)
+  }, [active])
 
   useEffect(() => {
     const panel = active === 'archive' ? archiveRef.current : worksRef.current
@@ -46,7 +52,18 @@ export default function Folio({ active, onChange, onOpenProject }: Props) {
             aria-hidden={active !== 'works'}
             inert={active !== 'works'}
           >
-            <Works onOpen={onOpenProject} />
+            {worksVisited ? (
+              <Suspense
+                fallback={
+                  <div className="folio__loading" role="status">
+                    <span className="mono">02 / WORKS</span>
+                    <span>LOADING PROJECTS</span>
+                  </div>
+                }
+              >
+                <Works onOpen={onOpenProject} />
+              </Suspense>
+            ) : null}
           </div>
         </div>
       </div>

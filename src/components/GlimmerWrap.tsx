@@ -93,7 +93,7 @@ export default function GlimmerWrap() {
     const build = () => {
       const side = Math.max(64, (width - 1700) / 2)
       band = side / width
-      const perSide = Math.min(160, Math.max(30, Math.round((side * height) / 5200)))
+      const perSide = Math.min(90, Math.max(24, Math.round((side * height) / 6200)))
       glints = []
       for (let i = 0; i < perSide; i++) {
         const tintRoll = random(i, 8)
@@ -114,7 +114,7 @@ export default function GlimmerWrap() {
     const resize = () => {
       width = Math.max(1, window.innerWidth)
       height = Math.max(1, window.innerHeight)
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      dpr = Math.min(window.devicePixelRatio || 1, 1.25)
       canvas.width = Math.round(width * dpr)
       canvas.height = Math.round(height * dpr)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -124,18 +124,6 @@ export default function GlimmerWrap() {
     const render = (time: number) => {
       ctx.clearRect(0, 0, width, height)
       ctx.globalCompositeOperation = 'lighter'
-
-      // A barely-there warmth on each side; the glints do the rest.
-      const haze = (x: number) => {
-        const gradient = ctx.createRadialGradient(x, height * 0.42, 0, x, height * 0.42, width * 0.3)
-        gradient.addColorStop(0, 'rgba(255, 232, 208, 0.035)')
-        gradient.addColorStop(0.55, 'rgba(255, 220, 214, 0.012)')
-        gradient.addColorStop(1, 'rgba(255, 220, 214, 0)')
-        ctx.fillStyle = gradient
-        ctx.fillRect(0, 0, width, height)
-      }
-      haze(width * 0.08)
-      haze(width * 0.92)
 
       for (const glint of glints) {
         const x = wrap(glint.x + glint.driftX * time, band * 0.01, band * 0.99)
@@ -171,7 +159,7 @@ export default function GlimmerWrap() {
     const tick = (now: number) => {
       if (!alive) return
       raf = requestAnimationFrame(tick)
-      if (last && now - last < 32) return
+      if (last && now - last < 40) return
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016
       last = now
       if (!reduced) clock += dt

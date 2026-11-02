@@ -289,10 +289,10 @@ export default function Archive() {
             <span id="archive-title">
               把日子，
               <br />
-              <em>慢慢归档</em>。
+              <em>慢慢归档</em>
             </span>
           }
-          intro="把去过的城市收进一张地图。点击省份，右边会展开那一站的照片，和当时写下的话。"
+          intro="把去过的城市收进一张地图。"
         />
 
         <div className="archive-map" data-reveal>

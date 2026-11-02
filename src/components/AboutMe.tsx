@@ -38,7 +38,7 @@ export default function About() {
                 <dd>{profile.role}</dd>
               </div>
               <div>
-                <dt>服务方向</dt>
+                <dt>工作方向</dt>
                 <dd>{profile.tags.join(' · ')}</dd>
               </div>
               <div>

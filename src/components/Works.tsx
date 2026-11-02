@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import SectionHead from './SectionHead'
+import FlexCarousel, { type FlexCarouselItem } from './FlexCarousel'
 import { projects, type Project } from '../data/site'
 import { asset } from '../lib/asset'
 
@@ -7,72 +9,73 @@ type Props = {
 }
 
 export default function Works({ onOpen }: Props) {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const nodes = sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (!nodes?.length) return undefined
+    const frame = requestAnimationFrame(() => {
+      nodes.forEach((node) => node.classList.add('is-inview'))
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  const carouselItems: FlexCarouselItem[] = projects.map((project) => ({
+    src: asset(project.cover),
+    alt: project.alt,
+    title: project.title,
+    subtitle: project.subtitle,
+  }))
+
   return (
-    <section className="section works" id="works" aria-labelledby="works-title">
+    <section ref={sectionRef} className="section works" id="works" aria-labelledby="works-title">
       <div className="shell">
         <SectionHead
           index="02"
           label="WORKS / 快生活"
           title={
             <span id="works-title">
-              把复杂的系统，
+              在快节奏的生活中，
               <br />
-              做成<em>可靠</em>的软件。
+              留下扎实的痕迹
             </span>
           }
-          intro="从工业视觉、异构算力到车载系统与 Web 产品——四个项目，四种把问题拆开、实现、交付的路径。点击任意卡片，查看项目背景、职责与技术栈。"
         />
 
         <div className="works__bar" data-reveal>
           <span className="mono">2023 — 2026 / 04 PROJECTS</span>
-          <span className="mono works__bar-hint">CLICK A CARD TO OPEN THE CASE</span>
+          <span className="mono works__bar-hint">DRAG / SCROLL · CLICK A CARD TO OPEN</span>
         </div>
 
-        <div className="works__grid">
-          {projects.map((project) => (
-            <button
-              key={project.id}
-              type="button"
-              className={`work work--${project.layout}`}
-              onClick={() => onOpen(project)}
-              aria-label={`查看项目：${project.title}，${project.subtitle}`}
-              data-reveal
-            >
-              <div className="work__media">
-                <img
-                  className="work__img"
-                  src={asset(project.cover)}
-                  alt={project.alt}
-                  loading={project.layout === 'feature' ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-                <div className="work__shade" aria-hidden="true" />
-                <span className="work__view" aria-hidden="true">
-                  查看案例 <span>↗</span>
-                </span>
-              </div>
-              <div className="work__caption">
-                <div className="work__info">
-                  <span className="work__meta mono">
-                    {project.index} — {project.category} / {project.year}
-                  </span>
-                  <h3 className="work__title">
-                    {project.title}
-                    <span className="work__subtitle">{project.subtitle}</span>
-                  </h3>
-                  <div className="work__tags">
-                    {project.tags.map((tag) => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
-                </div>
-                <span className="work__circle" aria-hidden="true">
-                  ↗
-                </span>
-              </div>
-            </button>
-          ))}
+        <div className="works__carousel" data-reveal>
+          <FlexCarousel
+            items={carouselItems}
+            preset="liquid"
+            intro="rise"
+            cardHeight={0.64}
+            gap={16}
+            radius={4}
+            fit="natural"
+            squeeze={0.18}
+            autoplay
+            autoplaySpeed={32}
+            focusOnClick={false}
+            selectAnyClick
+            captions={false}
+            cardLabels
+            captureWheel={false}
+            ariaLabel="快生活项目展示"
+            onSelect={(index) => {
+              const project = projects[index]
+              if (project) onOpen(project)
+            }}
+          />
         </div>
+
+        <p className="works__hint" data-reveal>
+          <span className="mono">SELECTED WORKS / 2023—26</span>
+          <span>拖动图片，或使用 ← → 浏览；点击图片打开案例，照片下方是对应项目名称。</span>
+        </p>
       </div>
     </section>
   )

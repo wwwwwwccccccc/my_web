@@ -12,6 +12,8 @@ export default function Hero() {
         <img
           className="hero__image"
           src={asset('/images/hero-shanghai.webp')}
+          srcSet={`${asset('/images/hero-shanghai-mobile.webp')} 800w, ${asset('/images/hero-shanghai.webp')} 1279w`}
+          sizes="100vw"
           alt=""
           fetchPriority="high"
           decoding="async"
