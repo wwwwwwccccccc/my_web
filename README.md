@@ -8,14 +8,105 @@
 
 ## 快速开始
 
-```bash
-pnpm install
-pnpm dev          # http://localhost:5173
-pnpm build        # 类型检查 + 生产构建，输出 dist/
-pnpm preview      # 本地预览生产构建
+### 环境要求
+
+- Node.js **20.19+ 或 22.12+**（Vite 7 要求；建议 Node 22 LTS，本项目在 Node 24 下验证）
+- 包管理器：**pnpm 10**（仓库自带 `pnpm-lock.yaml`，不要用 npm 生成新的 lockfile）
+
+### Windows PowerShell（推荐，不需要全局安装 pnpm）
+
+```powershell
+# 第一次：安装依赖
+corepack.cmd pnpm@10 install
+
+# 开发
+corepack.cmd pnpm@10 dev
+# http://127.0.0.1:5174/ 或 http://localhost:5174/
+
+# 类型检查 + 生产构建
+corepack.cmd pnpm@10 build
+
+# 本地预览生产构建
+corepack.cmd pnpm@10 preview
+# http://127.0.0.1:4173/
 ```
 
-> 安装时 pnpm 会提示 `Ignored build scripts: esbuild`（信息提示，不影响构建）。项目已在 `pnpm-workspace.yaml` 中关闭严格模式；如果换环境后构建异常，执行 `pnpm approve-builds` 允许 esbuild 即可。
+`corepack.cmd pnpm@10 ...` 是 Node 自带的 Corepack 用法：它会下载并运行 pnpm 10，**不依赖全局 `pnpm` 命令**，也不会碰到 PowerShell 禁止运行 `pnpm.ps1` 的问题。第一次运行需要联网下载 pnpm。
+
+> 如果 Node 安装不完整、连 `corepack` 也没有，可以先执行 `npm.cmd install -g pnpm@10`，然后统一使用 `pnpm.cmd` 运行下面的命令。
+
+### macOS / Linux
+
+```bash
+corepack pnpm@10 install
+corepack pnpm@10 dev
+corepack pnpm@10 build
+corepack pnpm@10 preview
+```
+
+### 已经安装好 pnpm 的情况
+
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm preview
+```
+
+如果 PowerShell 提示“无法加载 pnpm.ps1，因为在此系统上禁止运行脚本”，改用 `pnpm.cmd`：
+
+```powershell
+pnpm.cmd install
+pnpm.cmd dev
+pnpm.cmd build
+pnpm.cmd preview
+```
+
+或者只对当前用户放开本地脚本：
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+然后重新打开 PowerShell。
+
+### npm 备选（无法使用 pnpm 时）
+
+```powershell
+npm.cmd install --no-package-lock
+npm.cmd run dev
+npm.cmd run build
+npm.cmd run preview
+```
+
+npm 构建时会出现：
+
+```text
+npm warn Unknown project config "strict-dep-builds"
+npm warn Unknown project config "verify-deps-before-run"
+```
+
+这是 `.npmrc` 里两个 **pnpm 专用配置**，npm 不认识，只是 warning，**不阻止构建**。想彻底避免就用上面的 pnpm 命令；不建议为了消除 warning 删除 `.npmrc`。
+
+### 端口说明
+
+| 命令      | 地址                     | 说明                          |
+| --------- | ------------------------ | ----------------------------- |
+| `dev`     | `http://127.0.0.1:5174/` | Vite 开发服务器，支持热更新   |
+| `preview` | `http://127.0.0.1:4173/` | 预览已经 build 出来的 `dist/` |
+| `build`   | 无                       | 只生成 `dist/`，不启动网页    |
+
+端口来自 [vite.config.ts](vite.config.ts) 的 `server.port` 和 `preview.port`。如果 5174 被占用，Vite 会自动尝试下一个端口，以终端打印的 `Local:` 地址为准。
+
+### 安装时提示 `Ignored build scripts: esbuild`
+
+这是 pnpm 对依赖构建脚本的提示。仓库的 `pnpm-workspace.yaml` 已声明 `onlyBuiltDependencies: esbuild`，通常不需要处理。如果构建确实异常，执行：
+
+```powershell
+corepack.cmd pnpm@10 approve-builds
+```
+
+勾选 esbuild 后重新运行构建。
 
 技术栈：React 19、TypeScript、Vite 7。无 UI 框架、无动画库，动效由 CSS + IntersectionObserver 实现。
 
@@ -25,13 +116,13 @@ pnpm preview      # 本地预览生产构建
 
 导航：**首页 / 慢档案 / 快生活**。
 
-| 模块 | 内容 |
-| --- | --- |
-| Hero | 上海夜景全屏背景、TechText 标题「Hi，这里是 / W」、OPEN TO OPPORTUNITIES、上海坐标/当地时间；已移除中部介绍文字与 CTA |
+| 模块     | 内容                                                         |
+| -------- | ------------------------------------------------------------ |
+| Hero     | 上海夜景全屏背景、TechText 标题「Hi，这里是 / W」、OPEN TO OPPORTUNITIES、上海坐标/当地时间；已移除中部介绍文字与 CTA |
 | About Me | 人像/城市图 + 自我介绍、当前身份、电话、邮箱、标签（嵌入式 / LTE） |
-| 慢档案 | 中国省份地图 + 右侧照片面板；点击省份展开照片和文字；面板内提供本地照片上传入口 |
-| 快生活 | INSPECT（工业视觉检测）、LINK（RK3588/FPGA 高速传输）、DRIVE（车载冗余电源与诊断）、PORTFOLIO（本站） |
-| 结尾 | 一句话「欢迎你来参观我的生命一角」+ 回到顶部，不再有整屏联系模块；它位于 folio 之外，01/02 切换不影响它 |
+| 慢档案   | 中国省份地图 + 右侧照片面板；点击省份展开照片和文字；面板内提供本地照片上传入口 |
+| 快生活   | INSPECT（工业视觉检测）、LINK（RK3588/FPGA 高速传输）、DRIVE（车载冗余电源与诊断）、PORTFOLIO（本站） |
+| 结尾     | 一句话「欢迎你来参观我的生命一角」+ 回到顶部，不再有整屏联系模块；它位于 folio 之外，01/02 切换不影响它 |
 
 慢档案与快生活现在位于同一个 **100svh 水平 folio** 中：页面不再把 01/02 纵向堆叠，点击导航 01/02，或点击右侧不显眼的圆形箭头，会横向滑动切换；每个 panel 内部可独立纵向滚动。移动端导航隐藏，使用右下角的 `01 / 02` 箭头切换。
 
@@ -99,13 +190,13 @@ python scripts/build_china_map.py
 
 ## 替换素材
 
-| 素材 | 位置 | 建议规格 |
-| --- | --- | --- |
-| 项目封面 | `public/images/work-*.jpg` | 宽幅 2400×1333，竖版 1800×2175 |
-| 首页背景 | `public/images/hero-shanghai.webp` | 1279×1706 以上；竖版或横版均可，CSS 会按 `cover` 裁切 |
-| About Me 图片 | `public/images/about-portrait.webp` | 900×1125（4:5）；当前使用你提供的苏州东方之门照片 |
-| 慢档案照片 | `public/images/archive/*.webp` | 1200×800（3:2）最稳；照片文字在 `archiveProvinces` 中 |
-| 分享图 | `public/images/work-inspect.jpg` | 1200×630 更佳，可在 `index.html` 修改 |
+| 素材          | 位置                                | 建议规格                                              |
+| ------------- | ----------------------------------- | ----------------------------------------------------- |
+| 项目封面      | `public/images/work-*.jpg`          | 宽幅 2400×1333，竖版 1800×2175                        |
+| 首页背景      | `public/images/hero-shanghai.webp`  | 1279×1706 以上；竖版或横版均可，CSS 会按 `cover` 裁切 |
+| About Me 图片 | `public/images/about-portrait.webp` | 900×1125（4:5）；当前使用你提供的苏州东方之门照片     |
+| 慢档案照片    | `public/images/archive/*.webp`      | 1200×800（3:2）最稳；照片文字在 `archiveProvinces` 中 |
+| 分享图        | `public/images/work-inspect.jpg`    | 1200×630 更佳，可在 `index.html` 修改                 |
 
 项目封面的可编辑源文件在 `docs/artboards/*.html`，重新渲染：
 
@@ -194,9 +285,28 @@ python scripts/subset_fonts.py
 
 ## 部署
 
-`pnpm build` 后把 `dist/` 部署到任意静态托管（Vercel / Netlify / Cloudflare Pages / 对象存储）。
+构建：
+
+```powershell
+# Windows PowerShell（推荐）
+corepack.cmd pnpm@10 build
+
+# 已经装好 pnpm
+pnpm build
+```
+
+然后把 `dist/` 部署到任意静态托管（Vercel / Netlify / Cloudflare Pages / 对象存储）。
 
 如果部署在子路径（如 GitHub Pages 的 `/repo/`）：
+
+```powershell
+# Windows PowerShell：先设置环境变量，再构建
+$env:BASE_URL="/repo/"
+corepack.cmd pnpm@10 build
+Remove-Item Env:BASE_URL
+```
+
+macOS / Linux：
 
 ```bash
 BASE_URL=/repo/ pnpm build
