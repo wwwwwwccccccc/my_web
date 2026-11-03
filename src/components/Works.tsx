@@ -27,6 +27,12 @@ export default function Works({ onOpen }: Props) {
     subtitle: project.subtitle,
   }))
 
+  const projectCount = String(projects.length).padStart(2, '0')
+  const years = projects
+    .map((project) => Number.parseInt(project.year, 10))
+    .filter((year) => Number.isFinite(year))
+  const yearRange = years.length ? `${Math.min(...years)} — ${Math.max(...years)}` : '2023 — 2026'
+
   return (
     <section ref={sectionRef} className="section works" id="works" aria-labelledby="works-title">
       <div className="shell">
@@ -43,7 +49,7 @@ export default function Works({ onOpen }: Props) {
         />
 
         <div className="works__bar" data-reveal>
-          <span className="mono">2023 — 2026 / 04 PROJECTS</span>
+          <span className="mono">{yearRange} / {projectCount} PROJECTS</span>
           <span className="mono works__bar-hint">DRAG / SCROLL · CLICK A CARD TO OPEN</span>
         </div>
 

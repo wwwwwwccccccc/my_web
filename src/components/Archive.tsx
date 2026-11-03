@@ -268,6 +268,10 @@ export default function Archive() {
   }
 
   const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!owner) {
+      setUploadError('仅站点本人可以上传照片。')
+      return
+    }
     const input = event.currentTarget
     const files = Array.from(input.files ?? [])
     input.value = ''
@@ -446,15 +450,17 @@ export default function Archive() {
               tabIndex={0}
               aria-label={`${activeName}的照片`}
             >
-              <label className="archive-upload">
-                <input type="file" accept="image/*" multiple onChange={handleUpload} />
-                <span className="archive-upload__mark" aria-hidden="true">+</span>
-                <span className="archive-upload__copy">
-                  <b>上传照片</b>
-                  <small>本机保存 · 不上传服务器</small>
-                </span>
-                <span className="archive-upload__limit mono">JPG / PNG · ≤3MB</span>
-              </label>
+              {owner ? (
+                <label className="archive-upload">
+                  <input type="file" accept="image/*" multiple onChange={handleUpload} />
+                  <span className="archive-upload__mark" aria-hidden="true">+</span>
+                  <span className="archive-upload__copy">
+                    <b>上传照片</b>
+                    <small>本机保存 · 不上传服务器</small>
+                  </span>
+                  <span className="archive-upload__limit mono">JPG / PNG · ≤3MB</span>
+                </label>
+              ) : null}
 
               {uploadError ? <p className="archive-upload__error">{uploadError}</p> : null}
 
@@ -550,7 +556,7 @@ export default function Archive() {
                 ×
               </button>
 
-              <div className="archive-lightbox__media">
+              <div className="archive-lightbox__media" onDoubleClick={closeLightbox}>
                 <img
                   src={lightbox.photo.folder ? lightbox.photo.src : asset(lightbox.photo.src)}
                   alt={lightbox.photo.alt}

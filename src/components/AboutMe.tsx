@@ -28,9 +28,9 @@ export default function About() {
               <br />
               更可以量化我的生活
             </p>
-            <p className="about__desc">
+            {/* <p className="about__desc">
               白天写基带软件，晚上把生活慢慢归档。关心系统如何运行，也关心日子如何被记住。
-            </p>
+            </p> */}
 
             <dl className="about__facts">
               <div>

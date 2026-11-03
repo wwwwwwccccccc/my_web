@@ -36,18 +36,18 @@ export const projects: Project[] = [
   {
     id: 'inspect',
     index: '01',
-    title: 'INSPECT',
+    title: '拉挤板材智能在线监测系统研究-研',
     subtitle: '工业视觉检测系统',
     category: 'Industrial Vision / C++',
     year: '2024',
     tags: ['C++ / Qt', 'OpenCV', '多线程', '机器视觉'],
     cover: '/images/work-inspect.webp',
     alt: '四路相机监控画面与缺陷标记界面',
-    summary:
-      '为拉挤板材产线做在线缺陷检测：四路相机、1 fps 采集、缺陷识别与自动标记，替代人工目检。',
+    summary:'',
+      // '为拉挤板材产线做在线缺陷检测：四路相机、1 fps 采集、缺陷识别与自动标记，替代人工目检。',
     description: [
       '产线上的缺陷检测原本依赖人工目检，效率低、易漏检，也容易受主观判断影响。这个系统把相机采集、图像处理和执行机构控制串成一条实时链路。',
-      '我用 Qt 搭建上位机界面，用 QThread 让界面线程与四路相机处理线程并行，保证相机按每秒 1 帧采集并及时处理；识别出的缺陷坐标经自定义串口协议下发给 STM32，由舵机与步进电机完成标记，同时写入本地文件。',
+      '用 Qt 搭建上位机界面，用 QThread 让界面线程与四路相机处理线程并行，保证相机按每秒 1 帧采集并及时处理；识别出的缺陷坐标经自定义串口协议下发给 STM32，由舵机与步进电机完成标记，同时写入本地文件。',
     ],
     facts: [
       { label: '角色', value: '主要负责人' },
@@ -60,7 +60,7 @@ export const projects: Project[] = [
   {
     id: 'link',
     index: '02',
-    title: 'LINK',
+    title: '异构处理器PCIE高速传输设计-研',
     subtitle: '异构算力高速传输',
     category: 'Systems / Linux',
     year: '2023',
@@ -84,8 +84,8 @@ export const projects: Project[] = [
   {
     id: 'drive',
     index: '03',
-    title: 'DRIVE',
-    subtitle: '车载冗余电源与诊断',
+    title: '车载硬件研发-研',
+    subtitle: '车载硬件研发',
     category: 'Embedded / Automotive',
     year: '2023',
     tags: ['TMS570', 'CAN', '冗余电源', '硬件调试'],
@@ -108,15 +108,15 @@ export const projects: Project[] = [
   {
     id: 'portfolio',
     index: '04',
-    title: 'PORTFOLIO',
+    title: '示例',
     subtitle: '个人作品集网站',
     category: 'Web / React',
     year: '2026',
     tags: ['React 19', 'TypeScript', 'Vite', 'CSS'],
     cover: '/images/work-portfolio.webp',
     alt: 'PORTFOLIO 个人作品集网站：代码编辑器与暗色首页预览',
-    summary:
-      '你正在看的这个站点：全屏影像首页、项目详情弹窗、响应式布局，动画与排版全部手写 CSS。',
+    summary:'',
+    //   '你正在看的这个站点：全屏影像首页、项目详情弹窗、响应式布局，动画与排版全部手写 CSS。',
     description: [
       '这个作品集本身也是一个项目。它使用 React 19 + TypeScript + Vite 构建，没有引入 UI 框架或动画库，滚动显现、图片漂移、项目弹窗都由原生 CSS 与 IntersectionObserver 实现。',
       '设计上刻意保持克制：深色底、单一强调色、DIN 与思源字体的组合；首页用一张上海夜景与手写标题建立记忆点，项目页则尽量让作品自己说话。',
