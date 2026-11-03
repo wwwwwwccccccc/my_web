@@ -140,6 +140,7 @@ export type ArchivePhoto = {
   date: string
   place: string
   local?: boolean
+  folder?: boolean
 }
 
 export type ArchiveProvince = {

@@ -3,6 +3,7 @@ import type { CSSProperties, ChangeEvent } from 'react'
 import { createPortal } from 'react-dom'
 import SectionHead from './SectionHead'
 import { archiveProvinces, type ArchivePhoto } from '../data/site'
+import { folderPhotosByCode, provinceName } from '../data/folderPhotos'
 import { asset } from '../lib/asset'
 import { loadStoredPhotos, saveStoredPhoto, deleteStoredPhoto } from '../lib/photoStore'
 import { chinaMapViewBox, chinaProvinces, type ChinaProvinceShape } from '../data/chinaMap'
@@ -21,6 +22,37 @@ const readFile = (file: File) =>
 const DATA_BY_CODE = new Map(archiveProvinces.map((province) => [province.code, province]))
 const SHAPE_BY_CODE = new Map(chinaProvinces.map((province) => [province.code, province]))
 
+const OWNER_KEY = 'wp-archive-owner'
+const META_KEY = 'wp-archive-photo-meta'
+
+type PhotoMeta = Partial<Pick<ArchivePhoto, 'caption' | 'note' | 'date'>>
+
+function readOwner(): boolean {
+  try {
+    return window.localStorage.getItem(OWNER_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function readMeta(): Record<string, PhotoMeta> {
+  try {
+    const raw = window.localStorage.getItem(META_KEY)
+    const parsed = raw ? (JSON.parse(raw) as unknown) : {}
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, PhotoMeta>) : {}
+  } catch {
+    return {}
+  }
+}
+
+function persistMeta(next: Record<string, PhotoMeta>) {
+  try {
+    window.localStorage.setItem(META_KEY, JSON.stringify(next))
+  } catch {
+    // The current session still reflects the edit.
+  }
+}
+
 const PIN_OFFSETS: Record<string, [number, number]> = {
   '310000': [34, -2],
   '110000': [24, -6],
@@ -29,26 +61,6 @@ const PIN_OFFSETS: Record<string, [number, number]> = {
   '440000': [18, 10],
   '530000': [-6, -4],
   '510000': [-8, -6],
-}
-
-const HIDDEN_KEY = 'wp-archive-hidden-photos'
-
-function readHidden(): string[] {
-  try {
-    const raw = window.localStorage.getItem(HIDDEN_KEY)
-    const parsed = raw ? (JSON.parse(raw) as unknown) : []
-    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : []
-  } catch {
-    return []
-  }
-}
-
-function persistHidden(next: string[]) {
-  try {
-    window.localStorage.setItem(HIDDEN_KEY, JSON.stringify(next))
-  } catch {
-    // Ignore unavailable storage; the current session still reflects it.
-  }
 }
 
 function pinWidth(name: string, count: number) {
@@ -89,49 +101,72 @@ function ProvincePin({
 export default function Archive() {
   const [activeCode, setActiveCode] = useState('310000')
   const [uploads, setUploads] = useState<Record<string, ArchivePhoto[]>>({})
-  const [hidden, setHidden] = useState<string[]>(() => readHidden())
   const [uploadError, setUploadError] = useState('')
+  const [owner, setOwner] = useState<boolean>(() => readOwner())
+  const [metaOverrides, setMetaOverrides] = useState<Record<string, PhotoMeta>>(() => readMeta())
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [lightbox, setLightbox] = useState<{ code: string; photo: ArchivePhoto } | null>(null)
   const [editing, setEditing] = useState(false)
   const [draftCaption, setDraftCaption] = useState('')
   const [draftNote, setDraftNote] = useState('')
+  const [draftDate, setDraftDate] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
   const active = DATA_BY_CODE.get(activeCode)
   const activeShape = SHAPE_BY_CODE.get(activeCode)
-  const activeName = active?.name ?? activeShape?.name ?? '未知省份'
+  const activeName = active?.name || provinceName(activeCode) || activeShape?.name || '未知省份'
   const localPhotos = uploads[activeCode] ?? []
-  const visibleDataPhotos = active
-    ? active.photos.filter((photo) => !hidden.includes(photo.src))
-    : []
-  const photos = [...visibleDataPhotos, ...localPhotos]
-  const photoCountFor = (code: string) => {
-    const province = DATA_BY_CODE.get(code)
-    const dataCount = province
-      ? province.photos.filter((photo) => !hidden.includes(photo.src)).length
-      : 0
-    return dataCount + (uploads[code]?.length ?? 0)
+  const applyMeta = (photo: ArchivePhoto): ArchivePhoto => {
+    const override = metaOverrides[photo.id ?? photo.src]
+    return override ? { ...photo, ...override } : photo
   }
-  const totalPhotos =
-    archiveProvinces.reduce((sum, province) => sum + photoCountFor(province.code), 0) +
-    Object.entries(uploads).reduce(
-      (sum, [code, items]) => sum + (DATA_BY_CODE.has(code) ? 0 : items.length),
-      0,
-    )
+  const folderPhotos = (folderPhotosByCode[activeCode] ?? []).map(applyMeta)
+  const photos = [...folderPhotos, ...localPhotos]
+  const photoCountFor = (code: string) =>
+    (folderPhotosByCode[code]?.length ?? 0) + (uploads[code]?.length ?? 0)
   const pinCodes = Array.from(
     new Set([
       ...archiveProvinces.map((province) => province.code),
+      ...Object.keys(folderPhotosByCode),
       ...Object.keys(uploads),
     ]),
   ).filter((code) => photoCountFor(code) > 0)
+  const totalPhotos = pinCodes.reduce((sum, code) => sum + photoCountFor(code), 0)
   const nameFor = (code: string) =>
-    DATA_BY_CODE.get(code)?.name ?? SHAPE_BY_CODE.get(code)?.name ?? code
-  const region = active?.region ?? (localPhotos.length ? '本机上传' : '中国')
+    DATA_BY_CODE.get(code)?.name || provinceName(code) || SHAPE_BY_CODE.get(code)?.name || code
+  const region =
+    active?.region ??
+    (folderPhotos.length ? '本地文件夹' : localPhotos.length ? '本机上传' : '中国')
   const blurb =
     active?.blurb ??
-    (localPhotos.length
-      ? '这些照片保存在当前浏览器，还没有写进示例数据。'
-      : '这一站还没有归档。上传一张照片，从这里开始。')
+    (folderPhotos.length
+      ? '这些照片来自本地省份文件夹，开发时会自动同步；部署前重新构建即可。'
+      : localPhotos.length
+        ? '这些照片保存在当前浏览器，还没有写进示例数据。'
+        : '这一站还没有归档。上传一张照片，或把照片放进对应省份文件夹。')
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const param = url.searchParams.get('owner')
+    if (param === '1') {
+      try {
+        window.localStorage.setItem(OWNER_KEY, '1')
+      } catch {
+        // Owner mode still applies to this session.
+      }
+      setOwner(true)
+      url.searchParams.delete('owner')
+      window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+    } else if (param === '0') {
+      try {
+        window.localStorage.removeItem(OWNER_KEY)
+      } catch {
+        // Ignore storage errors.
+      }
+      setOwner(false)
+      url.searchParams.delete('owner')
+      window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
+    }
+  }, [])
 
   useEffect(() => {
     let alive = true
@@ -171,6 +206,7 @@ export default function Archive() {
     setEditing(false)
     setDraftCaption(photo.caption)
     setDraftNote(photo.note)
+    setDraftDate(photo.date)
   }
 
   const closeLightbox = () => {
@@ -179,44 +215,47 @@ export default function Archive() {
   }
 
   const deletePhoto = (code: string, photo: ArchivePhoto) => {
-    if (photo.local) {
-      if (!photo.id) return
-      setUploads((current) => ({
-        ...current,
-        [code]: (current[code] ?? []).filter((item) => item.id !== photo.id),
-      }))
-      void deleteStoredPhoto(photo.id).catch(() => {
-        setUploadError('照片已从页面移除，但浏览器存储删除失败。')
-      })
-    } else {
-      setHidden((current) => {
-        if (current.includes(photo.src)) return current
-        const next = [...current, photo.src]
-        persistHidden(next)
-        return next
-      })
-    }
-    if (
-      lightbox &&
-      (photo.local ? lightbox.photo.id === photo.id : lightbox.photo.src === photo.src)
-    ) {
-      closeLightbox()
-    }
+    if (!photo.local || !photo.id) return
+    setUploads((current) => ({
+      ...current,
+      [code]: (current[code] ?? []).filter((item) => item.id !== photo.id),
+    }))
+    void deleteStoredPhoto(photo.id).catch(() => {
+      setUploadError('照片已从页面移除，但浏览器存储删除失败。')
+    })
+    if (lightbox?.photo.id === photo.id) closeLightbox()
     setDeleteTarget(null)
   }
 
-  const restoreSamples = () => {
-    setHidden([])
-    persistHidden([])
-  }
-
   const saveDescription = () => {
-    if (!lightbox?.photo.id) return
+    if (!lightbox || !owner) return
     const updated: ArchivePhoto = {
       ...lightbox.photo,
       caption: draftCaption.trim() || '未命名照片',
       note: draftNote.trim(),
+      date: draftDate.trim() || '未标注日期',
     }
+
+    if (lightbox.photo.folder) {
+      const key = lightbox.photo.id ?? lightbox.photo.src
+      setMetaOverrides((current) => {
+        const next = {
+          ...current,
+          [key]: {
+            caption: updated.caption,
+            note: updated.note,
+            date: updated.date,
+          },
+        }
+        persistMeta(next)
+        return next
+      })
+      setLightbox({ ...lightbox, photo: updated })
+      setEditing(false)
+      return
+    }
+
+    if (!updated.id) return
     setUploads((current) => ({
       ...current,
       [lightbox.code]: (current[lightbox.code] ?? []).map((item) =>
@@ -313,7 +352,6 @@ export default function Archive() {
             >
               <g className="archive-map__provinces">
                 {chinaProvinces.map((province) => {
-                  const data = DATA_BY_CODE.get(province.code)
                   const count = photoCountFor(province.code)
                   const hasContent = count > 0
                   const isActive = province.code === activeCode
@@ -331,7 +369,7 @@ export default function Archive() {
                         .join(' ')}
                       tabIndex={hasContent ? 0 : -1}
                       role={hasContent ? 'button' : undefined}
-                      aria-label={`${data?.name ?? province.name}，${
+                      aria-label={`${nameFor(province.code)}，${
                         count ? `${count} 张照片` : '暂无照片'
                       }`}
                       aria-pressed={hasContent ? isActive : undefined}
@@ -366,7 +404,7 @@ export default function Archive() {
             </svg>
 
             <div className="archive-map__foot">
-              <span className="mono">中国省份地图 · 示例数据</span>
+              <span className="mono">中国省份地图</span>
               <span className="mono">PHOTO ARCHIVE / 2023—26</span>
             </div>
           </div>
@@ -429,7 +467,11 @@ export default function Archive() {
                     onDoubleClick={() => openLightbox(photo)}
                   >
                     <div className="archive-photo__media">
-                      <img src={asset(photo.src)} alt={photo.alt} loading="lazy" />
+                      <img
+                        src={photo.folder ? photo.src : asset(photo.src)}
+                        alt={photo.alt}
+                        loading="lazy"
+                      />
                     </div>
                     <div
                       className="archive-photo__tools"
@@ -438,13 +480,15 @@ export default function Archive() {
                       <button type="button" onClick={() => openLightbox(photo)}>
                         放大
                       </button>
-                      <button
-                        type="button"
-                        className="is-danger"
-                        onClick={() => setDeleteTarget(photo.id ?? photo.src)}
-                      >
-                        删除
-                      </button>
+                      {photo.folder ? null : (
+                        <button
+                          type="button"
+                          className="is-danger"
+                          onClick={() => setDeleteTarget(photo.id ?? photo.src)}
+                        >
+                          删除
+                        </button>
+                      )}
                     </div>
 
                     {deleteTarget === (photo.id ?? photo.src) ? (
@@ -471,11 +515,9 @@ export default function Archive() {
                       <div className="archive-photo__meta">
                         <span className="mono">{photo.date}</span>
                         <span className="mono">
-                          {photo.local ? `本机 · ${photo.place}` : photo.place}
                         </span>
                       </div>
                       <h4>{photo.caption}</h4>
-                      <p>{photo.note}</p>
                     </figcaption>
                   </figure>
                 ))
@@ -509,15 +551,15 @@ export default function Archive() {
               </button>
 
               <div className="archive-lightbox__media">
-                <img src={asset(lightbox.photo.src)} alt={lightbox.photo.alt} />
+                <img
+                  src={lightbox.photo.folder ? lightbox.photo.src : asset(lightbox.photo.src)}
+                  alt={lightbox.photo.alt}
+                />
               </div>
 
               <div className="archive-lightbox__body">
                 <div className="archive-lightbox__meta">
                   <span className="mono">{lightbox.photo.date}</span>
-                  <span className="mono">
-                    {lightbox.photo.local ? `本机 · ${lightbox.photo.place}` : lightbox.photo.place}
-                  </span>
                 </div>
 
                 {editing ? (
@@ -535,6 +577,14 @@ export default function Archive() {
                         maxLength={40}
                         onChange={(event) => setDraftCaption(event.target.value)}
                         autoFocus
+                      />
+                    </label>
+                    <label>
+                      <span>日期</span>
+                      <input
+                        value={draftDate}
+                        maxLength={20}
+                        onChange={(event) => setDraftDate(event.target.value)}
                       />
                     </label>
                     <label>
@@ -558,25 +608,44 @@ export default function Archive() {
                     <h3>{lightbox.photo.caption}</h3>
                     <p>{lightbox.photo.note || '还没有写下描述。'}</p>
                     {lightbox.photo.local ? (
-                      <div className="archive-lightbox__actions">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setDraftCaption(lightbox.photo.caption)
-                            setDraftNote(lightbox.photo.note)
-                            setEditing(true)
-                          }}
-                        >
-                          编辑描述
-                        </button>
-                        <button
-                          type="button"
-                          className="is-danger"
-                          onClick={() => deletePhoto(lightbox.code, lightbox.photo)}
-                        >
-                          删除照片
-                        </button>
-                      </div>
+                      owner ? (
+                        <div className="archive-lightbox__actions">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDraftCaption(lightbox.photo.caption)
+                              setDraftNote(lightbox.photo.note)
+                              setDraftDate(lightbox.photo.date)
+                              setEditing(true)
+                            }}
+                          >
+                            编辑信息
+                          </button>
+                          <button
+                            type="button"
+                            className="is-danger"
+                            onClick={() => deletePhoto(lightbox.code, lightbox.photo)}
+                          >
+                            删除照片
+                          </button>
+                        </div>
+                      ) : null
+                    ) : lightbox.photo.folder ? (
+                      owner ? (
+                        <div className="archive-lightbox__actions">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDraftCaption(lightbox.photo.caption)
+                              setDraftNote(lightbox.photo.note)
+                              setDraftDate(lightbox.photo.date)
+                              setEditing(true)
+                            }}
+                          >
+                            编辑信息
+                          </button>
+                        </div>
+                      ) : null
                     ) : (
                       <>
                         <div className="archive-lightbox__actions">
@@ -604,13 +673,8 @@ export default function Archive() {
         <div className="archive__foot" data-reveal>
           <span className="mono">MORE NOTES / 持续更新</span>
           <p>
-            目前是 {pinCodes.length} 站、{totalPhotos} 张照片。示例照片和本机上传都可以删除，也可以随时恢复示例。
+            目前是 {pinCodes.length} 站、{totalPhotos} 张照片。
           </p>
-          {hidden.length ? (
-            <button type="button" className="archive__restore" onClick={restoreSamples}>
-              恢复示例照片
-            </button>
-          ) : null}
         </div>
       </div>
     </section>
