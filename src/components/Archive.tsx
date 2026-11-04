@@ -111,6 +111,7 @@ export default function Archive() {
   const [draftNote, setDraftNote] = useState('')
   const [draftDate, setDraftDate] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
   const active = DATA_BY_CODE.get(activeCode)
   const activeShape = SHAPE_BY_CODE.get(activeCode)
   const activeName = active?.name || provinceName(activeCode) || activeShape?.name || '未知省份'
@@ -143,6 +144,15 @@ export default function Archive() {
       : localPhotos.length
         ? '这些照片保存在当前浏览器，还没有写进示例数据。'
         : '这一站还没有归档。上传一张照片，或把照片放进对应省份文件夹。')
+
+  useEffect(() => {
+    const nodes = sectionRef.current?.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (!nodes?.length) return undefined
+    const frame = requestAnimationFrame(() => {
+      nodes.forEach((node) => node.classList.add('is-inview'))
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   useEffect(() => {
     const url = new URL(window.location.href)
@@ -323,7 +333,7 @@ export default function Archive() {
   }
 
   return (
-    <section className="section archive" id="archive" aria-labelledby="archive-title">
+    <section ref={sectionRef} className="section archive" id="archive" aria-labelledby="archive-title">
       <div className="shell">
         <SectionHead
           index="01"

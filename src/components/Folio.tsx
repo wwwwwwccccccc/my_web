@@ -1,9 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import Archive from './Archive'
 import type { Project } from '../data/site'
 
 export type FolioId = 'archive' | 'works'
 
+const Archive = lazy(() => import('./Archive'))
 const Works = lazy(() => import('./Works'))
 
 type Props = {
@@ -15,11 +15,33 @@ type Props = {
 export default function Folio({ active, onChange, onOpenProject }: Props) {
   const archiveRef = useRef<HTMLDivElement>(null)
   const worksRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const [archiveVisited, setArchiveVisited] = useState(false)
   const [worksVisited, setWorksVisited] = useState(active === 'works')
 
   useEffect(() => {
     if (active === 'works') setWorksVisited(true)
   }, [active])
+
+  useEffect(() => {
+    const node = sectionRef.current
+    if (!node) return undefined
+    if (!('IntersectionObserver' in window)) {
+      setArchiveVisited(true)
+      return undefined
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setArchiveVisited(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '600px 0px' },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const panel = active === 'archive' ? archiveRef.current : worksRef.current
@@ -30,7 +52,7 @@ export default function Folio({ active, onChange, onOpenProject }: Props) {
   const nextLabel = next === 'works' ? '快生活' : '慢档案'
 
   return (
-    <section className="folio" id="folio" aria-label="慢档案与快生活">
+    <section ref={sectionRef} className="folio" id="folio" aria-label="慢档案与快生活">
       <div className="folio__viewport">
         <div
           className="folio__track"
@@ -43,7 +65,23 @@ export default function Folio({ active, onChange, onOpenProject }: Props) {
             aria-hidden={active !== 'archive'}
             inert={active !== 'archive'}
           >
-            <Archive />
+            {archiveVisited ? (
+              <Suspense
+                fallback={
+                  <div className="folio__loading" role="status">
+                    <span className="mono">01 / ARCHIVE</span>
+                    <span>LOADING ARCHIVE</span>
+                  </div>
+                }
+              >
+                <Archive />
+              </Suspense>
+            ) : (
+              <div className="folio__loading" role="status">
+                <span className="mono">01 / ARCHIVE</span>
+                <span>SCROLL TO LOAD</span>
+              </div>
+            )}
           </div>
           <div
             ref={worksRef}

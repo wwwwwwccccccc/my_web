@@ -1,16 +1,46 @@
+import { useEffect, useRef, useState } from 'react'
 import { profile } from '../data/site'
 import { asset } from '../lib/asset'
 
+const PLACEHOLDER =
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22/%3E'
+
 export default function About() {
+  const portraitRef = useRef<HTMLImageElement>(null)
+  const [portraitSrc, setPortraitSrc] = useState(PLACEHOLDER)
+
+  useEffect(() => {
+    const node = portraitRef.current
+    if (!node) return undefined
+    if (!('IntersectionObserver' in window)) {
+      setPortraitSrc(asset('/images/about-portrait.webp'))
+      return undefined
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPortraitSrc(asset('/images/about-portrait.webp'))
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '0px' },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <section className="about" id="about" aria-labelledby="about-title">
       <div className="shell">
         <div className="about__card" data-reveal>
           <figure className="about__portrait">
             <img
-              src={asset('/images/about-portrait.webp')}
+              ref={portraitRef}
+              src={portraitSrc}
               alt="王迧在苏州东方之门前的照片"
               loading="lazy"
+              decoding="async"
+              fetchPriority="low"
             />
             <figcaption>
               <span className="mono">SUZHOU, 2026</span>

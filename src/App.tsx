@@ -46,6 +46,30 @@ export default function App() {
     return () => observer.disconnect()
   }, [])
 
+  // Load the decorative serif face only when the lower editorial sections
+  // approach the viewport; the first screen uses the display/sans faces.
+  useEffect(() => {
+    const targets = ['about', 'folio']
+      .map((id) => document.getElementById(id))
+      .filter((node): node is HTMLElement => Boolean(node))
+    if (!targets.length) return undefined
+    if (!('IntersectionObserver' in window)) {
+      document.documentElement.classList.add('serif-enhanced')
+      return undefined
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          document.documentElement.classList.add('serif-enhanced')
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '0px', threshold: 0.01 },
+    )
+    targets.forEach((node) => observer.observe(node))
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <>
       <a className="skip-link" href="#main">

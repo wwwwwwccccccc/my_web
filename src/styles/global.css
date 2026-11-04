@@ -77,8 +77,12 @@
   --pad: clamp(20px, 4vw, 72px);
   --sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --display: 'DIN', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+  --serif: 'Songti SC', 'SimSun', serif;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.serif-enhanced {
+  --serif: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
 }
 
 *,
