@@ -85,7 +85,7 @@ for (const [path, url] of Object.entries(modules)) {
     src: url,
     alt: meta?.alt ?? `${name} · ${caption}`,
     caption,
-    note: meta?.note ?? '来自本地省份文件夹，开发时自动同步；部署前重新 build 即可。',
+    note: meta?.note ?? '',
     date: meta?.date ?? 'LOCAL',
     place: meta?.place ?? name,
     folder: true,

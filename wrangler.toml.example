@@ -1,0 +1,9 @@
+# Copy this file to wrangler.toml, then fill in database_id.
+name = "king-c-portfolio"
+compatibility_date = "2026-11-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "VISITS_DB"
+database_name = "portfolio-visits"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

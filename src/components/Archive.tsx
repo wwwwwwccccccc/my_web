@@ -314,7 +314,7 @@ export default function Archive() {
           src: urls[index],
           alt: file.name,
           caption: '新上传的照片',
-          note: '保存在当前浏览器；换设备或清理浏览器数据后不会同步。',
+          note: '',
           date,
           place: activeName,
           local: true,
@@ -622,7 +622,7 @@ export default function Archive() {
                 ) : (
                   <>
                     <h3>{lightbox.photo.caption}</h3>
-                    <p>{lightbox.photo.note || '还没有写下描述。'}</p>
+                    {lightbox.photo.note ? <p>{lightbox.photo.note}</p> : null}
                     {lightbox.photo.local ? (
                       owner ? (
                         <div className="archive-lightbox__actions">

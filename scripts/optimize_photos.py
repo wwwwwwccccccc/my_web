@@ -5,8 +5,8 @@ from PIL import Image, ImageOps
 
 ROOT = Path('src/assets/province-photos')
 BACKUP = Path('docs/photo-originals')
-MAX_EDGE = 1600
-QUALITY = 82
+MAX_EDGE = 1200
+QUALITY = 80
 SOURCE_SUFFIXES = {'.jpg', '.jpeg', '.png'}
 
 converted = []

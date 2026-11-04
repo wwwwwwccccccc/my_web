@@ -2,7 +2,7 @@
 
 基带软件开发工程师，现居上海。暗色、编辑感的个人作品集，React + Vite，PC-first，版心最大 1700px。
 
-当前为 **v1 可运行版本**：全屏影像首页、About Me、慢档案地图、快生活、结尾一句话；包含 TechText 标题、图片缓慢漂移、项目详情弹窗、本机累计访问统计、本地时间等细节。
+当前为 **v1 可运行版本**：全屏影像首页、About Me、慢档案地图、快生活、结尾一句话；包含 TechText 标题、图片缓慢漂移、项目详情弹窗、Cloudflare 全站累计访问、本地时间等细节。
 
 ---
 
@@ -202,7 +202,7 @@ corepack.cmd pnpm@10 approve-builds
 
 慢档案与快生活现在位于同一个 **100svh 水平 folio** 中：页面不再把 01/02 纵向堆叠，点击导航 01/02，或点击右侧不显眼的圆形箭头，会横向滑动切换；每个 panel 内部可独立纵向滚动。移动端导航隐藏，使用右下角的 `01 / 02` 箭头切换。
 
-右上角的「累计访问人数」使用 `localStorage` / `sessionStorage` 统计当前浏览器的访问次数、首次与最近访问时间，不上传服务器。点击可打开详情面板；这是本机访问次数，不是全站真实人数。
+右上角的「累计访问次数」由 Cloudflare Pages Function `/api/visit` 和 D1 数据库统计全站访问次数；悬停或点击只显示数字，不再展开本机访问面板。具体部署步骤见下文「Cloudflare 全站访问次数」。
 
 ---
 
@@ -503,6 +503,81 @@ python scripts/subset_fonts.py
 - `pointer: fine` 才启用，并隐藏原生光标；触摸设备和 `prefers-reduced-motion` 下保留原生光标；
 - 全屏 canvas `pointer-events: none`，不阻挡点击或 TechText 拖动；`z-index: 1000` 位于 grain、导航和弹窗之上；
 - 无额外依赖。
+
+---
+
+## Cloudflare 全站访问次数
+
+前端只请求同源接口：
+
+```text
+POST /api/visit
+→ { "count": 1234 }
+```
+
+接口文件：`functions/api/visit.js`  
+数据库迁移：`migrations/0001_visits.sql`
+
+### 1. 创建 D1 数据库
+
+```powershell
+npx wrangler@latest login
+npx wrangler@latest d1 create portfolio-visits
+```
+
+记下返回的 `database_id`。
+
+### 2. 建表
+
+```powershell
+npx wrangler@latest d1 execute portfolio-visits --remote --file=./migrations/0001_visits.sql
+```
+
+### 3. 绑定到 Pages 项目
+
+在 Cloudflare Dashboard：
+
+```text
+Workers & Pages → 你的 Pages 项目
+→ Settings → Functions → D1 database bindings
+→ 添加 VISITS_DB，选择 portfolio-visits
+```
+
+或者把 `wrangler.toml.example` 复制为 `wrangler.toml`，填入真实 `database_id`。
+
+### 4. 重新部署
+
+如果使用 Git 集成：提交并 push，`functions/` 会随 Pages 构建一起部署。
+
+如果当前项目是 Direct Upload，Pages Functions 不一定会随 `dist/` 一起上传。请改成 Git 集成，或者把同一个接口部署成 Cloudflare Worker 并绑定到 `/api/visit`。不要只上传 `dist/` 后期待 `/api/visit` 自动存在。
+
+如果用 Wrangler 且确认 Functions 已包含，可以重新上传：
+
+```powershell
+npm.cmd run build
+npx wrangler@latest pages deploy dist --project-name=你的项目名
+```
+
+### 5. 验证
+
+```powershell
+curl.exe -X POST https://你的域名/api/visit
+```
+
+应该返回：
+
+```json
+{ "count": 1 }
+```
+
+每刷新一次页面加 1，导航栏会显示全站累计访问次数。悬停或点击不再展开面板。
+
+注意：
+
+- 本地 `vite preview` 没有 Cloudflare Function，右上角会显示 `—`，这是正常的；以线上 Pages 地址为准。
+- 统计的是**访问次数（页面加载）**，不是去重人数；刷新页面也会加 1。
+- 公开 POST 接口可能被脚本刷量；需要的话可在 Cloudflare 加 Rate Limiting 或 Turnstile。
+- Pages Functions 必须位于项目根目录的 `functions/`，不要放进 `dist/`。
 
 ---
 
