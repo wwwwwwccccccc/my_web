@@ -1,0 +1,8 @@
+name = "my-web"
+compatibility_date = "2026-11-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "VISITS_DB"
+database_name = "portfolio-visits"
+database_id = "bb2853e8-bc16-453e-9419-c82630dc1924"

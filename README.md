@@ -518,6 +518,15 @@ POST /api/visit
 接口文件：`functions/api/visit.js`  
 数据库迁移：`migrations/0001_visits.sql`
 
+一键准备脚本（需要先登录 Wrangler）：
+
+```powershell
+npx wrangler@latest login
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-cloudflare-visits.ps1
+```
+
+脚本会创建/查找 `portfolio-visits` D1、写入 `wrangler.toml`、执行远程迁移并构建。之后按提示提交部署或在 Dashboard 绑定 `VISITS_DB`。
+
 ### 1. 创建 D1 数据库
 
 ```powershell
