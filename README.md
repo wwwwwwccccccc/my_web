@@ -201,6 +201,9 @@ corepack.cmd pnpm@10 approve-builds
 | 结尾         | 一句话「欢迎你来参观我的生命一角」+ 回到顶部，不再有整屏联系模块；它位于 folio 之外，01/02 切换不影响它 |
 
 慢档案与快生活现在位于同一个 **100svh 水平 folio** 中：页面不再把 01/02 纵向堆叠，点击导航 01/02，或点击右侧不显眼的圆形箭头，会横向滑动切换；每个 panel 内部可独立纵向滚动。移动端导航隐藏，使用右下角的 `01 / 02` 箭头切换。
+```图片转换-To .webp格式
+python.exe scripts/optimize_photos.py
+```
 
 右上角的「累计访问次数」由 Cloudflare Pages Function `/api/visit` 和 D1 数据库统计全站访问次数；悬停或点击只显示数字，不再展开本机访问面板。具体部署步骤见下文「Cloudflare 全站访问次数」。
 
